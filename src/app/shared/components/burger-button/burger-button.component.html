@@ -1,0 +1,29 @@
+<button
+   (click)="onClick()"
+   aria-label="Menu"
+   class="w-8 h-8 focus:outline-none fixed top-6 right-5 z-50 sm:hidden cursor-pointer"
+>
+   <span
+      class="absolute left-0 top-1/2 block h-1 rounded w-full bg-white transform transition duration-300"
+      [ngClass]="{
+         'translate-y-[0px] rotate-45': isOpen,
+         'translate-y-[-10px] rotate-0': !isOpen,
+      }"
+   ></span>
+
+   <span
+      class="absolute left-0 top-1/2 block h-1 rounded w-full bg-white transform transition-opacity duration-300"
+      [ngClass]="{
+         'opacity-0': isOpen,
+         'opacity-100': !isOpen,
+      }"
+   ></span>
+
+   <span
+      class="absolute left-0 top-1/2 block h-1 rounded w-full bg-white transform transition duration-300"
+      [ngClass]="{
+         'translate-y-[0px] -rotate-45': isOpen,
+         'translate-y-[10px] rotate-0': !isOpen,
+      }"
+   ></span>
+</button>
