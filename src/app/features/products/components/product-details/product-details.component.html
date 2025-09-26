@@ -1,0 +1,78 @@
+<div class="flex flex-row w-full pt-24 items-center justify-center">
+   <div class="container flex flex-col items-start p-3 gap-4">
+      <div class="h-full w-full md:w-[50dvh] relative">
+         <swiper-container
+            #mainSwiper
+            slides-per-view="1"
+            space-between="10"
+            autoplay-delay="5000"
+            autoplay-disable-on-interaction="false"
+            speed="800">
+
+            @for (imagePair of product.imageUrls | keyvalue; track imagePair.key) {
+               <swiper-slide>
+                  <img
+                     class="w-full h-90 object-contain"
+                     [ngSrc]="imagePair.value | toRelativePath"
+                     width="800"
+                     height="800"
+                     alt="{{ product.name }}" />
+               </swiper-slide>
+            }
+         </swiper-container>
+
+         <swiper-container
+            #thumbsSwiper
+            slides-per-view="9"
+            space-between="5"
+            watch-slides-progress="true"
+            free-mode="true"
+            class="thumbnails-swiper mt-4">
+
+            @for (imagePair of product.imageUrls | keyvalue; track imagePair.key) {
+               <swiper-slide class="thumbnail-slide">
+                  <img
+                     class="w-full h-full object-contain rounded-sm"
+                     [ngSrc]="imagePair.value | toRelativePath"
+                     width="100"
+                     height="100"
+                     alt="{{ product.name }} thumbnail" />
+               </swiper-slide>
+            }
+
+         </swiper-container>
+      </div>
+
+      <h1 class="w-full text-body-lg md:text-head-md pt-5 text-left">
+         R$ {{ product.price.toFixed(2).replace('.', ',') }}
+      </h1>
+      <h2 class="w-full text-body-md md:text-title-xl font-title-xl">{{ product.name }}</h2>
+      <p class="w-full text-body md:text-body-md text-left">{{ product.description }}</p>
+      <div class="w-full flex flex-row items-center justify-start gap-4">
+         <app-stars [productRating]="product.rating"></app-stars>
+         <span>({{ product.soldCount }})</span>
+      </div>
+      <div class="w-full flex flex-row items-center justify-start gap-4 pt-4">
+         <app-outlined-button
+            [label]="product.stock + ' em estoque'"
+            [textColor]="'text-green-600'"
+            [icon]="'assets/icons/check-circle.svg'"
+         ></app-outlined-button>
+         <app-outlined-button
+            [label]="product.soldCount <= 1 ? product.soldCount + ' vendido' : product.soldCount + ' vendidos'"
+            [textColor]="'text-orange-base'"
+            [icon]="'assets/icons/sold-out.svg'"
+         ></app-outlined-button>
+      </div>
+      <div class="w-full flex flex-row items-center justify-start gap-4 pt-4">
+         <app-quantity-stepper [stock]="product.stock"></app-quantity-stepper>
+         <app-button
+            [label]="'Adicionar'"
+            [type]="'button'"
+            [icon]="'assets/images/cart.svg'"
+            [disabled]="!product.stock"
+         ></app-button>
+      </div>
+   </div>
+   <div class="">Comments</div>
+</div>
