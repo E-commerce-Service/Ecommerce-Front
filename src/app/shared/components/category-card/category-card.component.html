@@ -1,0 +1,21 @@
+<div class="flex flex-col items-center justify-center gap-4">
+   <a [routerLink]="[link]" class="w-full">
+      <div
+         class="flex items-center justify-center border border-gray-100 w-35 h-30 md:w-50 md:h-35 shadow-lg rounded-xl md:rounded-3xl overflow-hidden hover:bg-gray-50 hover:shadow-md transition-all duration-200 cursor-pointer"
+      >
+         <img
+            class="w-20 h-20"
+            ngSrc="{{ image }}"
+            alt="{{ alt }}"
+            width="500"
+            height="500"
+            priority
+         />
+      </div>
+   </a>
+   <div>
+      <p>
+         {{ label }}
+      </p>
+   </div>
+</div>
