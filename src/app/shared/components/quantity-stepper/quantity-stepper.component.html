@@ -1,0 +1,27 @@
+<div class="flex flex-row text-lg border border-gray-200 rounded-sm">
+   <button
+      class="px-6 py-1 cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-10 transition-all duration-300"
+      (click)="decrement()"
+      [disabled]="quantity <= 1"
+   >
+      -
+   </button>
+   <input
+      class="w-16 text-center border-0 focus:ring-0 focus:outline-none"
+      [(ngModel)]="quantity"
+      type="number"
+      [min]="1"
+      [max]="stock"
+      [disabled]="!stock"
+      (keydown)="preventMinus($event)"
+      (input)="onQuantityInput($event)"
+   />
+
+   <button
+      class="px-6 py-1 cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-10 transition-all duration-300"
+      (click)="increment()"
+      [disabled]="quantity >= stock"
+   >
+      +
+   </button>
+</div>
