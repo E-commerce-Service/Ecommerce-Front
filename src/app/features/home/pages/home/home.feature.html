@@ -1,0 +1,55 @@
+<app-header></app-header>
+
+<div class="w-screen flex flex-col items-center justify-center">
+   <div
+      class="container mt-10 lg:mt-34 flex flex-row flex-wrap justify-center items-center gap-x-5 md:gap-x-20 gap-y-5"
+   >
+      @for (category of categories; track category) {
+         <app-category-card
+            [image]="category.image"
+            [alt]="category.alt"
+            [label]="category.label"
+            [link]="category.link"
+         ></app-category-card>
+      }
+   </div>
+
+   @if(productsState$ | async; as state) {
+      @if(state.loading) {
+         <div class="loading-container">
+            <div class="spinner"></div>
+            <p>Carregando eventos...</p>
+         </div>
+      }
+      @if(state.error) {
+         <div class="error-container">
+            <p>Erro ao carregar eventos.</p>
+         </div>
+      }
+      @if(state.products.data.length > 0 && state.products.data; as products) {
+         <h2 class="section-title">Produtos em Destaque</h2>
+
+         <div
+            class="container flex flex-row flex-wrap justify-center items-center md:gap-5"
+         >
+            @for (product of products; track product) {
+               <app-product-card
+                  [productId]="product.id"
+                  [productImage]="
+               product.coverImageUrl
+                  ? product.coverImageUrl
+                  : 'https://placehold.co/600x400'
+            "
+                  [productTitle]="product.name"
+                  [productDescription]="product.description"
+                  [productPrice]="product.price"
+                  [productRating]="product.rating"
+                  [totalSold]="product.soldCount"
+               ></app-product-card>
+            }
+         </div>
+      }
+   }
+
+
+</div>
