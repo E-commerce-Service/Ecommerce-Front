@@ -1,1 +1,54 @@
 /* You can add global styles to this file, and also import other style files */
+@use "tailwindcss" as *
+@use 'swiper/css'
+@use 'swiper/css/navigation'
+@use 'swiper/css/pagination'
+
+body
+   overflow-x: hidden
+
+@theme
+   --color-orange-base: #F37F36
+   --color-orange-dark: #FB6E13
+   --color-blue-base: #018EF0
+   --color-blue-dark: #0F6FD1
+   --color-primary: #211F3B
+   --color-secondary: #135A86
+   --color-gray: #989898
+   --text-head-xl: 3rem
+   --font-weight-head-xl: 700
+   --text-head-md: 2rem
+   --text-title-xl: 2rem
+   --font-weight-title-xl: 700
+   --text-body-lg: 1.5rem
+   --text-body-md: 1.25rem
+   --text-body: 1rem
+   --text-body-light: 1rem
+   --font-weight-body-light: 300
+   --text-body-sm: 0.875rem
+
+input[type="number"]
+   -moz-appearance: textfield
+
+   &::-webkit-outer-spin-button,
+   &::-webkit-inner-spin-button
+      -webkit-appearance: none
+      margin: 0
+   &::-ms-clear,
+   &::-ms-reveal
+      display: none
+
+@layer components
+   .section-title
+      @apply text-body-md font-bold mt-24 mb-8 pb-2 border-b-4 border-orange-base md:text-head-md md:mt-44 md:mb-16
+
+.thumbnails-swiper
+   @apply h-10
+   .thumbnail-slide
+      @apply opacity-50 cursor-pointer transition-opacity duration-300 border border-orange-base rounded-md
+      &:hover
+         @apply opacity-80
+   .swiper-slide-thumb-active
+      @apply opacity-100 border border-orange-base rounded-md
+
+
