@@ -1,0 +1,14 @@
+<button
+   [attr.type]="type"
+   [disabled]="disabled"
+   (click)="onClick()"
+   class="px-12 py-3 flex flex-row items-center justify-center gap-2 rounded-full transition duration-300 ease-in-out text-body text-white"
+   [ngClass]="[
+      disabled
+         ? 'bg-gray-300 cursor-not-allowed text-gray-500'
+         : color + ' cursor-pointer',
+      !disabled ? hover : '',
+   ]"
+>
+   {{ label }} @if(icon) { <img class="h-6" [ngSrc]="icon" alt="Cart" height="37" width="37"> }
+</button>
