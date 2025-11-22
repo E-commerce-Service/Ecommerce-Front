@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { NAV_PATHS } from '../../../core/navigation/navigation.constant';
 import { NgClass, NgOptimizedImage } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
    selector: 'app-hide-menu',
@@ -10,6 +11,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
    styleUrl: './hide-menu.component.sass',
 })
 export class HideMenuComponent {
+   private authService = inject(AuthService);
    protected logo = 'assets/images/logo.svg';
    protected cart = 'assets/images/cart.svg';
    protected profile = 'assets/images/profile.svg';
@@ -18,10 +20,18 @@ export class HideMenuComponent {
    protected profileAlt = 'Profile';
    protected navPaths = NAV_PATHS;
 
-   @Input() isOpen = false;
-   @Output() toggleChange = new EventEmitter<void>();
+   protected isLogged = this.authService.isLogged;
+   protected userInitials = this.authService.userInitials;
 
-   onClick() {
-      this.toggleChange.emit();
+   @Input() isOpen = false;
+
+   @Input() isAdmin = false;
+   @Input() profileLink = '/sign-in';
+   @Input() profileTitle = 'Sign In';
+
+   @Output() menuClose = new EventEmitter<void>();
+
+   closeMenu() {
+      this.menuClose.emit();
    }
 }
