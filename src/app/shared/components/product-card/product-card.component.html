@@ -1,8 +1,10 @@
 <div
+   tabindex="0"
+   (keydown)="router.navigate(['/products/details', product.code])"
    class="w-40 md:w-64 h-86 shadow-lg border border-gray-100 md:rounded-3xl overflow-hidden hover:bg-gray-50 hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col"
 >
    <a
-      [routerLink]="['/products/details', productId]"
+      [routerLink]="['/products/details', product.code]"
       class="flex flex-col h-full"
    >
       <div
@@ -10,7 +12,7 @@
       >
          <img
             class="h-full w-full object-contain"
-            ngSrc="{{ productImage | toRelativePath }}"
+            ngSrc="{{ product.coverImageUrl | toRelativePath }}"
             alt="Product Image"
             width="500"
             height="500"
@@ -23,28 +25,28 @@
             <h3
                class="font-bold text-gray-900 text-body md:text-lg line-clamp-2"
             >
-               {{ productTitle }}
+               {{ product.name }}
             </h3>
             <p class="text-gray-500 text-sm mt-1 line-clamp-2">
-               {{ productDescription }}
+               {{ product.description }}
             </p>
          </div>
 
          <div class="mt-auto">
             <p class="text-gray-900 font-bold text-body md:text-xl">
-               R${{ productPrice.toFixed(2) }}
+               {{ product.price | currency: "BRL" }}
             </p>
          </div>
 
          <div class="flex items-center mt-2">
-            <app-stars [productRating]="productRating"></app-stars>
+            <app-stars [productRating]="product.rating"></app-stars>
 
             <div class="ml-2 flex text-sm">
                <span class="font-medium text-gray-700">{{
-                     productRating.toFixed(1)
-                  }}</span>
+                  product.rating.toFixed(1)
+               }}</span>
                <span class="mx-1 text-gray-300">|</span>
-               <span class="text-gray-500">{{ totalSold }}</span>
+               <span class="text-gray-500">{{ product.totalReviews }}</span>
             </div>
          </div>
       </div>
