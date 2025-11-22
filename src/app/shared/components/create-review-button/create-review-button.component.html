@@ -1,0 +1,23 @@
+<div
+   (click)="onAddReview()"
+   (keydown)="onAddReview()"
+   class="w-full bg-sky-50 border border-sky-200 rounded-lg p-4 flex items-center gap-4 cursor-pointer hover:bg-sky-100 transition-colors"
+   role="button"
+   tabindex="0"
+   aria-label="Adicionar uma nova avaliação"
+>
+   <div class="flex-shrink-0 bg-white p-2 rounded-full border border-sky-200">
+      <img
+         ngSrc="assets/icons/edit.svg"
+         alt="Escrever avaliação"
+         width="24"
+         height="24"
+      />
+   </div>
+   <div class="flex-1">
+      <h3 class="font-semibold text-sky-800">Qual a sua opinião?</h3>
+      <p class="text-sm text-sky-600">
+         Conte para outros clientes sobre sua experiência.
+      </p>
+   </div>
+</div>
