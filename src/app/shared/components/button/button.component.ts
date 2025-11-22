@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {NgClass, NgOptimizedImage} from '@angular/common';
+import { NgClass, NgOptimizedImage } from '@angular/common';
 
 @Component({
    selector: 'app-button',
@@ -13,7 +13,7 @@ export class ButtonComponent {
    @Input() disabled = false;
    @Input() color = 'bg-blue-base';
    @Input() hover = 'hover:bg-blue-dark';
-   @Input() icon!: string
+   @Input() icon!: string;
 
    @Output() clicked = new EventEmitter<void>();
 
