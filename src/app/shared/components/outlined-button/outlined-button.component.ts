@@ -8,7 +8,7 @@ import { NgClass, NgOptimizedImage } from '@angular/common';
    styleUrl: './outlined-button.component.sass',
 })
 export class OutlinedButtonComponent {
-   @Input() textColor!: string
+   @Input() textColor!: string;
    @Input() label!: string;
    @Input() icon!: string;
 }
