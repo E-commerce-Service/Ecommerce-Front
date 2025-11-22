@@ -8,19 +8,21 @@
    <div
       class="bg-primary w-screen p-5 flex-row justify-center items-center flex"
    >
-      <div class="container flex flex-row">
-         <a href="/">
+      <div class="container flex flex-row justify-between items-center">
+         <a routerLink="/" tabindex="0">
             <img
                class="sm:w-40 w-30"
                ngSrc="{{ logo }}"
                alt="{{ logoAlt }}"
                width="153"
                height="47"
+               title="Logo"
                priority
             />
          </a>
+
          <div
-            class="flex-row items-center justify-end w-full md:gap-16 gap-12 hidden sm:flex"
+            class="flex-row items-center justify-end md:gap-16 gap-12 hidden sm:flex"
          >
             @for (link of navPaths; track link.path) {
                <a
@@ -28,6 +30,8 @@
                   [routerLink]="link.path"
                   routerLinkActive="active-link"
                   [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+                  title="Navegar para {{ link.label }}"
+                  tabindex="0"
                >
                   <p
                      class="text-white transform transition-transform duration-200 ease-in-out hover:scale-110"
@@ -36,33 +40,71 @@
                   </p>
                </a>
             }
-            <a class="pointer" href="/cart">
+            @if (isAdmin()) {
+               <a
+                  class="pointer"
+                  [routerLink]="'/admin'"
+                  routerLinkActive="active-link"
+                  title="Navegar para Gerenciamento"
+                  tabindex="0"
+               >
+                  <p
+                     class="text-white transform transition-transform duration-200 ease-in-out hover:scale-110"
+                  >
+                     Gerenciamento
+                  </p>
+               </a>
+            }
+            <a class="pointer" routerLink="/cart" tabindex="0">
                <img
                   class="w-8"
                   ngSrc="{{ cart }}"
                   alt="{{ cartAlt }}"
                   width="30"
                   height="30"
+                  title="Navegar para carrinho de compras"
                   priority
                />
             </a>
-            <a class="pointer" href="/profile">
-               <img
-                  class="w-8"
-                  ngSrc="{{ profile }}"
-                  alt="{{ profileAlt }}"
-                  width="30"
-                  height="30"
-                  priority
-               />
+            <a
+               class="pointer"
+               [routerLink]="profileLink()"
+               [title]="profileTitle()"
+               tabindex="0"
+            >
+               @if (isLogged()) {
+                  <div
+                     class="w-8 h-8 rounded-full bg-orange-base text-white flex items-center justify-center text-xs font-bold border border-white shadow-sm hover:bg-orange-dark transition-colors"
+                  >
+                     {{ userInitials() }}
+                  </div>
+               } @else {
+                  <img
+                     class="w-8"
+                     ngSrc="{{ profile }}"
+                     alt="{{ profileAlt }}"
+                     width="30"
+                     height="30"
+                     priority
+                  />
+               }
             </a>
+         </div>
+
+         <div class="sm:hidden">
+            <app-burger-button
+               (toggleChange)="toggleMenu()"
+               [isOpen]="isOpen"
+            ></app-burger-button>
          </div>
       </div>
    </div>
-   <app-hide-menu [isOpen]="isOpen" (close)="toggleMenu()"></app-hide-menu>
 
-   <app-burger-button
-      (toggleChange)="toggleMenu()"
+   <app-hide-menu
       [isOpen]="isOpen"
-   ></app-burger-button>
+      [isAdmin]="isAdmin() || false"
+      [profileLink]="profileLink()"
+      [profileTitle]="profileTitle()"
+      (menuClose)="toggleMenu()"
+   ></app-hide-menu>
 </nav>
