@@ -7,6 +7,12 @@
 body
    overflow-x: hidden
 
+button
+   cursor: pointer
+
+   &:disabled
+      cursor: not-allowed
+
 @theme
    --color-orange-base: #F37F36
    --color-orange-dark: #FB6E13
@@ -52,3 +58,8 @@ input[type="number"]
       @apply opacity-100 border border-orange-base rounded-md
 
 
+.no-scrollbar
+   -ms-overflow-style: none
+   scrollbar-width: none
+   &::-webkit-scrollbar
+      display: none
