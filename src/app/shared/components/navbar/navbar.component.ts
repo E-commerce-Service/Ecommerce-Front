@@ -1,19 +1,27 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import {
+   Component,
+   computed,
+   HostListener,
+   inject,
+   OnDestroy,
+} from '@angular/core';
 import { NgClass, NgOptimizedImage } from '@angular/common';
 import { NAV_PATHS } from '../../../core/navigation/navigation.constant';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { HideMenuComponent } from '../hide-menu/hide-menu.component';
 import { BurgerButtonComponent } from '../burger-button/burger-button.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { UserType } from '../../../core/enum/UserType';
 
 @Component({
    selector: 'app-navbar',
    imports: [
-      NgOptimizedImage,
       RouterLink,
       RouterLinkActive,
       HideMenuComponent,
       BurgerButtonComponent,
       NgClass,
+      NgOptimizedImage,
    ],
    templateUrl: './navbar.component.html',
    styleUrl: './navbar.component.sass',
@@ -26,6 +34,7 @@ export class NavbarComponent implements OnDestroy {
    protected cartAlt = 'Cart';
    protected profileAlt = 'Profile';
    protected navPaths = NAV_PATHS;
+   private authService = inject(AuthService);
 
    protected isOpen = false;
 
@@ -35,7 +44,7 @@ export class NavbarComponent implements OnDestroy {
 
    private currentScroll = 0;
    protected isScrolling = false;
-   private scrollTimeout!: ReturnType<typeof setTimeout> ;
+   private scrollTimeout!: ReturnType<typeof setTimeout>;
 
    @HostListener('window:scroll', [])
    onWindowScroll() {
@@ -54,6 +63,23 @@ export class NavbarComponent implements OnDestroy {
          }, 800);
       }
    }
+
+   protected userInitials = this.authService.userInitials;
+
+   protected isAdmin = computed(() => {
+      const currentUser = this.authService.currentUser();
+      return currentUser?.userType === UserType.ADMIN;
+   });
+
+   protected isLogged = this.authService.isLogged;
+
+   protected profileLink = computed(() => {
+      return this.isLogged() ? '/profile' : '/sign-in';
+   });
+
+   protected profileTitle = computed(() => {
+      return this.isLogged() ? 'Navegar para perfil' : 'Navegar para login';
+   });
 
    ngOnDestroy() {
       clearTimeout(this.scrollTimeout);
