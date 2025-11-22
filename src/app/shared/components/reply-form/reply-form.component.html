@@ -1,0 +1,25 @@
+<div class="mt-4 ml-10 animate-fade-in animate-duration-300">
+   <div class="relative w-full">
+      <textarea
+         [(ngModel)]="replyContent"
+         (keydown.escape)="handleCancel()"
+         rows="3"
+         placeholder="Adicione uma resposta..."
+         class="w-full border border-gray-300 rounded-lg p-3 pr-14 placeholder:text-gray-500 focus:border-orange-base focus:ring-orange-base transition resize-none"
+      ></textarea>
+
+      <button
+         (click)="handleSubmit()"
+         [disabled]="replyContent.trim().length === 0"
+         title="Enviar resposta"
+         class="absolute bottom-1 right-1 w-10 h-10 flex items-center justify-center text-white disabled:opacity-30 transition-colors disabled:cursor-not-allowed"
+      >
+         <img
+            ngSrc="assets/icons/send.svg"
+            alt="Enviar"
+            width="20"
+            height="20"
+         />
+      </button>
+   </div>
+</div>
