@@ -1,0 +1,70 @@
+<div
+   class="bg-white w-full md:w-64 h-auto md:h-full flex flex-col border-b md:border-b-0 md:border-r border-gray-200"
+>
+   <div
+      class="hidden md:flex h-16 shrink-0 items-center px-6 border-b border-gray-200"
+   >
+      <h2 class="text-lg font-bold text-gray-800">Categorias</h2>
+   </div>
+
+   <nav class="flex-1 overflow-x-auto md:overflow-y-auto no-scrollbar">
+      @if (categoriesState$ | async; as catState) {
+         <ul
+            class="flex flex-row md:flex-col items-center md:items-stretch p-2 md:p-4 gap-2 md:gap-1"
+         >
+            @if (catState.loading) {
+               @for (i of [1, 2, 3, 4, 5]; track i) {
+                  <li class="animate-pulse">
+                     <div
+                        class="h-10 bg-gray-100 rounded-lg w-24 md:w-full"
+                     ></div>
+                  </li>
+               }
+            }
+
+            @if (catState.error) {
+               <div class="p-4 text-center">
+                  <p class="text-sm text-red-500">Erro ao carregar.</p>
+                  <button
+                     (click)="loadCategories()"
+                     class="text-xs text-blue-600 underline mt-1"
+                  >
+                     Tentar novamente
+                  </button>
+               </div>
+            }
+
+            @if (!catState.loading && !catState.error) {
+               <li>
+                  <a
+                     routerLink="/category"
+                     [routerLinkActiveOptions]="{ exact: true }"
+                     routerLinkActive="bg-orange-50 text-orange-600 font-semibold border-orange-200"
+                     class="flex items-center gap-3 px-4 py-2.5 text-gray-600 rounded-lg border border-transparent hover:bg-gray-50 transition-all whitespace-nowrap"
+                  >
+                     <span class="text-sm md:text-base">Todas</span>
+                  </a>
+               </li>
+
+               @for (category of catState.categories; track category.label) {
+                  <li>
+                     <a
+                        [routerLink]="category.link"
+                        routerLinkActive="bg-orange-50 text-orange-600 font-semibold border-orange-200"
+                        class="flex items-center gap-3 px-4 py-2.5 text-gray-600 rounded-lg border border-transparent hover:bg-gray-50 transition-all whitespace-nowrap"
+                     >
+                        <span class="text-sm md:text-base">{{
+                           category.label
+                        }}</span>
+                     </a>
+                  </li>
+               } @empty {
+                  <li class="p-4 text-gray-500 text-sm">
+                     Nenhuma categoria encontrada.
+                  </li>
+               }
+            }
+         </ul>
+      }
+   </nav>
+</div>

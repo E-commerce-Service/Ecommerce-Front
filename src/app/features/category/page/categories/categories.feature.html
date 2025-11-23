@@ -1,0 +1,255 @@
+<div class="container mx-auto min-h-screen">
+   @if (state$ | async; as state) {
+      @if (state.loading) {
+         <app-loading-container
+            message="Buscando produtos..."
+         ></app-loading-container>
+      }
+
+      @if (state.error) {
+         <div class="text-center py-12 md:py-20">
+            <h2 class="text-xl md:text-2xl font-bold text-red-600 mb-2">
+               Ops!
+            </h2>
+            <p class="text-sm md:text-base text-gray-600">
+               Ocorreu um erro ao carregar esta categoria.
+            </p>
+            <a
+               routerLink="/"
+               class="text-sm md:text-base text-blue-600 hover:underline mt-4 inline-block"
+            >
+               Voltar para Home
+            </a>
+         </div>
+      }
+
+      @if (!state.loading && !state.error) {
+         @if (state.found) {
+            <div class="mb-6 md:mb-8 border-b border-gray-200 pb-6">
+               <div
+                  class="flex items-center gap-2 text-xs md:text-sm text-gray-500 mb-2"
+               >
+                  <a
+                     routerLink="/"
+                     class="hover:text-orange-base transition-colors"
+                     >Home</a
+                  >
+                  <span>/</span>
+                  <span>Categorias</span>
+               </div>
+
+               <h1
+                  class="text-2xl md:text-head-md font-bold text-primary capitalize"
+               >
+                  {{ state.categoryName }}
+               </h1>
+
+               <div
+                  class="mt-6 flex flex-col lg:flex-row gap-4 justify-between items-end lg:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100"
+               >
+                  <div class="w-full lg:w-1/2 relative">
+                     <div
+                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+                     >
+                        <svg
+                           class="w-4 h-4 text-gray-400"
+                           fill="none"
+                           viewBox="0 0 24 24"
+                           stroke="currentColor"
+                        >
+                           <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                           />
+                        </svg>
+                     </div>
+                     <input
+                        [formControl]="searchControl"
+                        type="text"
+                        class="block w-full pl-10 p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-orange-base focus:border-orange-base placeholder-gray-400"
+                        placeholder="Buscar em {{ state.categoryName }}..."
+                     />
+                  </div>
+
+                  <div class="flex gap-2 w-full lg:w-auto">
+                     <select
+                        [formControl]="sortControl"
+                        class="w-full lg:w-48 p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-orange-base focus:border-orange-base bg-white text-gray-700 cursor-pointer"
+                     >
+                        <option [ngValue]="null">Mais Recentes</option>
+                        <option [ngValue]="SortBy.PRICE">Preço</option>
+                        <option [ngValue]="SortBy.NAME">Nome</option>
+                        <option [ngValue]="SortBy.SOLD_COUNT">
+                           Mais Vendidos
+                        </option>
+                        <option [ngValue]="SortBy.RATING">
+                           Melhor Avaliados
+                        </option>
+                     </select>
+
+                     <select
+                        [formControl]="directionControl"
+                        class="w-36 p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-orange-base focus:border-orange-base bg-white text-gray-700 cursor-pointer"
+                     >
+                        <option [ngValue]="SortDirection.ASC">Crescente</option>
+                        <option [ngValue]="SortDirection.DESC">
+                           Decrescente
+                        </option>
+                     </select>
+                  </div>
+               </div>
+
+               <p
+                  class="text-sm md:text-base text-gray-500 mt-4 flex items-center gap-2"
+               >
+                  <span class="w-2 h-2 rounded-full bg-orange-base"></span>
+                  Exibindo <strong>{{ state.products.length }}</strong> de
+                  <strong>{{ state.pagination.totalElements }}</strong> produtos
+               </p>
+            </div>
+
+            @if (state.products.length > 0) {
+               <div
+                  class="container flex flex-row flex-wrap justify-center items-center mb-24 md:gap-5"
+               >
+                  @for (product of state.products; track product.id) {
+                     <app-product-card [product]="product"></app-product-card>
+                  }
+               </div>
+
+               @if (state.pagination.totalPages > 1) {
+                  <div
+                     class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12 border-t border-gray-100 pt-8"
+                  >
+                     <button
+                        (click)="prevPage(state.pagination.page)"
+                        [disabled]="state.pagination.page === 0"
+                        class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
+                     >
+                        <svg
+                           class="w-3.5 h-3.5 mr-2"
+                           aria-hidden="true"
+                           xmlns="http://www.w3.org/2000/svg"
+                           fill="none"
+                           viewBox="0 0 14 10"
+                        >
+                           <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M13 5H1m0 0 4 4M1 5l4-4"
+                           />
+                        </svg>
+                        Anterior
+                     </button>
+
+                     <span class="text-sm text-gray-600">
+                        Página
+                        <span class="font-bold text-gray-900">{{
+                           state.pagination.page + 1
+                        }}</span>
+                        de
+                        <span class="font-bold text-gray-900">{{
+                           state.pagination.totalPages
+                        }}</span>
+                     </span>
+
+                     <button
+                        (click)="
+                           nextPage(
+                              state.pagination.page,
+                              state.pagination.totalPages
+                           )
+                        "
+                        [disabled]="
+                           state.pagination.page >=
+                           state.pagination.totalPages - 1
+                        "
+                        class="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
+                     >
+                        Próxima
+                        <svg
+                           class="w-3.5 h-3.5 ml-2"
+                           aria-hidden="true"
+                           xmlns="http://www.w3.org/2000/svg"
+                           fill="none"
+                           viewBox="0 0 14 10"
+                        >
+                           <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M1 5h12m0 0L9 1m4 4L9 9"
+                           />
+                        </svg>
+                     </button>
+                  </div>
+               }
+            } @else {
+               <div
+                  class="text-center py-12 md:py-20 bg-gray-50 rounded-xl border border-dashed border-gray-300"
+               >
+                  <svg
+                     class="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-4"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                  >
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                     />
+                  </svg>
+                  <p
+                     class="text-base md:text-xl text-gray-500 px-4 font-medium"
+                  >
+                     Nenhum produto encontrado com estes filtros.
+                  </p>
+                  <p class="text-sm text-gray-400 mt-1">
+                     Tente buscar por outro termo ou limpar os filtros.
+                  </p>
+                  <button
+                     (click)="resetFilters()"
+                     class="mt-4 text-orange-600 hover:text-orange-700 hover:underline font-medium text-sm"
+                  >
+                     Limpar filtros
+                  </button>
+               </div>
+            }
+         } @else {
+            <div class="text-center py-12 md:py-20">
+               <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-16 h-16 text-gray-300 mx-auto mb-4"
+               >
+                  <path
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  />
+               </svg>
+               <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2">
+                  Categoria não encontrada
+               </h2>
+               <p class="text-sm md:text-base text-gray-600 px-4">
+                  Não encontramos a categoria "{{ state.categoryName }}".
+               </p>
+               <a
+                  routerLink="/"
+                  class="text-sm md:text-base text-blue-600 hover:underline mt-4 inline-block font-medium"
+               >
+                  Ver todas as categorias
+               </a>
+            </div>
+         }
+      }
+   }
+</div>
