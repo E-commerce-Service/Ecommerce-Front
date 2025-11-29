@@ -1,0 +1,207 @@
+<div class="min-h-screen bg-slate-50 pt-20 md:pt-28 pb-12 px-4">
+   <div class="container mx-auto max-w-7xl">
+      @if (state$ | async; as state) {
+         <div class="mb-10">
+            <div
+               class="flex items-center gap-2 text-xs md:text-sm text-slate-500 mb-6 font-medium"
+            >
+               <a
+                  routerLink="/"
+                  class="hover:text-orange-base transition-colors"
+                  >Home</a
+               >
+               <span class="text-slate-300">/</span>
+               <span class="text-slate-800">Todos os Produtos</span>
+            </div>
+
+            <div
+               class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6"
+            >
+               <div>
+                  <h1
+                     class="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight"
+                  >
+                     Explorar Produtos
+                  </h1>
+                  <div class="flex items-center gap-2">
+                     <span
+                        class="flex h-2 w-2 rounded-full bg-orange-base"
+                     ></span>
+                     <p class="text-slate-500 text-sm font-medium">
+                        Mostrando
+                        <span class="text-slate-900 font-bold">{{
+                           state.products.length
+                        }}</span>
+                        de {{ state.pagination.totalElements }} resultados
+                     </p>
+                  </div>
+               </div>
+
+               <div class="w-full xl:w-auto sticky top-24 z-30">
+                  <app-filter-bar
+                     [initialName]="initialSearchName"
+                     (filterChange)="onFilterChange($event)"
+                  >
+                  </app-filter-bar>
+               </div>
+            </div>
+         </div>
+
+         @if (state.loading) {
+            <div class="py-32">
+               <app-loading-container
+                  message="Carregando catálogo..."
+               ></app-loading-container>
+            </div>
+         }
+
+         @if (state.error) {
+            <div class="text-center py-32">
+               <div
+                  class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-50 mb-6 ring-8 ring-red-50/50"
+               >
+                  <svg
+                     class="w-10 h-10 text-red-500"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                  >
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                     />
+                  </svg>
+               </div>
+               <h3 class="text-xl font-bold text-slate-900">
+                  Erro ao carregar produtos
+               </h3>
+               <p class="text-slate-500 mt-2 mb-6">
+                  Não foi possível conectar ao servidor.
+               </p>
+               <button
+                  (click)="clearFilters()"
+                  class="px-6 py-2.5 bg-white border border-slate-300 rounded-xl font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm"
+               >
+                  Tentar novamente
+               </button>
+            </div>
+         }
+
+         @if (!state.loading && !state.error) {
+            @if (state.products.length > 0) {
+               <div
+                  class="flex flex-wrap justify-center md:gap-5 animate-fade-in-up delay-100"
+               >
+                  @for (product of state.products; track product.id) {
+                     <app-product-card
+                        [product]="product"
+                        class="h-full"
+                     ></app-product-card>
+                  }
+               </div>
+
+               @if (state.pagination.totalPages > 1) {
+                  <div
+                     class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-8 border-t border-slate-200"
+                  >
+                     <button
+                        (click)="prevPage(state.pagination.page)"
+                        [disabled]="state.pagination.page === 0"
+                        class="group flex items-center justify-center px-6 py-3 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-full hover:bg-slate-50 hover:text-orange-base hover:border-orange-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm w-full sm:w-auto"
+                     >
+                        <svg
+                           class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"
+                           fill="none"
+                           stroke="currentColor"
+                           viewBox="0 0 24 24"
+                        >
+                           <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M15 19l-7-7 7-7"
+                           />
+                        </svg>
+                        Anterior
+                     </button>
+
+                     <span class="text-sm font-medium text-slate-500">
+                        Página
+                        <span class="text-slate-900 font-bold">{{
+                           state.pagination.page + 1
+                        }}</span>
+                        de {{ state.pagination.totalPages }}
+                     </span>
+
+                     <button
+                        (click)="
+                           nextPage(
+                              state.pagination.page,
+                              state.pagination.totalPages
+                           )
+                        "
+                        [disabled]="
+                           state.pagination.page >=
+                           state.pagination.totalPages - 1
+                        "
+                        class="group flex items-center justify-center px-6 py-3 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-full hover:bg-slate-50 hover:text-orange-base hover:border-orange-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm w-full sm:w-auto"
+                     >
+                        Próxima
+                        <svg
+                           class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
+                           fill="none"
+                           stroke="currentColor"
+                           viewBox="0 0 24 24"
+                        >
+                           <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 5l7 7-7 7"
+                           />
+                        </svg>
+                     </button>
+                  </div>
+               }
+            } @else {
+               <div
+                  class="flex flex-col items-center justify-center py-32 bg-white rounded-3xl border border-dashed border-slate-300 shadow-sm"
+               >
+                  <div
+                     class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-slate-50"
+                  >
+                     <svg
+                        class="w-12 h-12 text-slate-300"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                     >
+                        <path
+                           stroke-linecap="round"
+                           stroke-linejoin="round"
+                           stroke-width="1.5"
+                           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                     </svg>
+                  </div>
+                  <h3 class="text-2xl font-bold text-slate-900 mb-2">
+                     Nenhum produto encontrado
+                  </h3>
+                  <p class="text-slate-500 text-center max-w-md mb-8">
+                     Não encontramos resultados para sua busca. Tente usar
+                     termos diferentes ou remova os filtros.
+                  </p>
+                  <button
+                     (click)="clearFilters()"
+                     class="px-8 py-3 bg-orange-base text-white rounded-full font-bold hover:bg-orange-dark transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transform hover:-translate-y-0.5"
+                  >
+                     Limpar Todos os Filtros
+                  </button>
+               </div>
+            }
+         }
+      }
+   </div>
+</div>
