@@ -33,7 +33,7 @@ export class ReviewsService {
    private _guardIsAuthenticated(): Observable<never> | null {
       const currentUser = this.authService.currentUser();
       if (!currentUser) {
-         this.router.navigate(['/login']).then();
+         this.router.navigate(['/sign-in']).then();
          return EMPTY;
       }
       return null;
