@@ -24,6 +24,10 @@ export class ToastService {
       this.addToast({ message, type: 'info', duration });
    }
 
+   public showWarning(message: string, duration = 6000): void {
+      this.addToast({ message, type: 'warning', duration });
+   }
+
    private addToast(toast: Omit<Toast, 'id'>): void {
       const newToast: Toast = {
          id: Date.now() + Math.random(),
