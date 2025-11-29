@@ -31,20 +31,31 @@ import { ProductCategoryResponse } from '../../../../core/@types/ProductCategory
 import { Pagination } from '../../../../core/@types/Pagination';
 import { CategoryService } from '../../../../core/services/category.service';
 import { CategoryTableComponent } from '../../components/category-table/category-table.component';
+import { ToastService } from '../../../../core/services/toast.service';
+import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal/alert-modal.component';
 
 @Component({
    selector: 'app-category-management',
-   imports: [CommonModule, ReactiveFormsModule, CategoryTableComponent],
+   imports: [
+      CommonModule,
+      ReactiveFormsModule,
+      CategoryTableComponent,
+      AlertModalComponent,
+   ],
    templateUrl: './category-management.feature.html',
    styleUrl: './category-management.feature.sass',
 })
 export class CategoryManagementFeature implements OnInit {
    private fb = inject(FormBuilder);
    private categoryService = inject(CategoryService);
+   private toastService = inject(ToastService);
+   isDeleteModalOpen = false;
+   categoryIdToDelete: number | null = null;
 
    isDragging = false;
    searchControl = new FormControl('');
    isSubmitting = false;
+   isFormVisible = false;
 
    private readonly initialPaginationState: Pagination<ProductCategoryResponse> =
       {
@@ -137,6 +148,14 @@ export class CategoryManagementFeature implements OnInit {
       );
    }
 
+   toggleForm() {
+      if (this.isFormVisible) {
+         this.resetForm();
+      } else {
+         this.isFormVisible = true;
+      }
+   }
+
    private processFile(file: File) {
       this.selectedFile = file;
       const reader = new FileReader();
@@ -175,17 +194,23 @@ export class CategoryManagementFeature implements OnInit {
          if (file.type.startsWith('image/')) {
             this.processFile(file);
          } else {
-            alert('Por favor, solte apenas arquivos de imagem.');
+            this.toastService.showWarning(
+               'Por favor, solte apenas arquivos de imagem.',
+            );
          }
       }
    }
 
    onSubmit(): void {
-      if (this.categoryForm.invalid) return;
+      if (this.categoryForm.invalid) {
+         this.categoryForm.markAllAsTouched();
+         return;
+      }
 
       const { name, description } = this.categoryForm.value;
 
       this.isSubmitting = true;
+
       if (this.editMode) {
          this.categoryService
             .updateCategory(
@@ -195,13 +220,20 @@ export class CategoryManagementFeature implements OnInit {
                this.selectedFile,
             )
             .pipe(finalize(() => (this.isSubmitting = false)))
-            .subscribe(() => {
-               this.resetForm();
-               this.pageSubject.next(this.currentPagination.page);
+            .subscribe({
+               next: () => {
+                  this.toastService.showSuccess(
+                     'Categoria atualizada com sucesso!',
+                  );
+                  this.resetForm();
+                  this.pageSubject.next(this.currentPagination.page);
+               },
+               error: () =>
+                  this.toastService.showError('Erro ao atualizar categoria.'),
             });
       } else {
          if (!this.selectedFile) {
-            console.error('Nenhuma imagem selecionada!');
+            this.toastService.showWarning('Imagem é obrigatória!');
             this.isSubmitting = false;
             return;
          }
@@ -209,24 +241,32 @@ export class CategoryManagementFeature implements OnInit {
          this.categoryService
             .createCategory(name, description, this.selectedFile)
             .pipe(finalize(() => (this.isSubmitting = false)))
-            .subscribe(() => {
-               this.resetForm();
-               this.searchControl.setValue('');
+            .subscribe({
+               next: () => {
+                  this.toastService.showSuccess(
+                     'Categoria criada com sucesso!',
+                  );
+                  this.resetForm();
+                  this.searchControl.setValue('');
 
-               this.categoryService
-                  .getCategories(0, this.currentPagination.size)
-                  .subscribe((response) => {
-                     const lastPage =
-                        response.pagination.totalPages > 0
-                           ? response.pagination.totalPages - 1
-                           : 0;
-                     this.pageSubject.next(lastPage);
-                  });
+                  this.categoryService
+                     .getCategories(0, this.currentPagination.size)
+                     .subscribe((response) => {
+                        const lastPage =
+                           response.pagination.totalPages > 0
+                              ? response.pagination.totalPages - 1
+                              : 0;
+                        this.pageSubject.next(lastPage);
+                     });
+               },
+               error: () =>
+                  this.toastService.showError('Erro ao criar categoria.'),
             });
       }
    }
 
    onEdit(category: ProductCategoryResponse): void {
+      this.isFormVisible = true;
       this.editMode = true;
       this.currentCategoryId = category.id;
       this.imagePreview = category.imageUrl;
@@ -234,22 +274,46 @@ export class CategoryManagementFeature implements OnInit {
          name: category.name,
          description: category.description,
       });
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
    }
 
    onDelete(id: number): void {
-      if (confirm('Tem certeza que deseja excluir esta categoria?')) {
-         this.categoryService.deleteCategory(id).subscribe(() => {
-            if (
-               this.currentCategoriesList.length === 1 &&
-               this.currentPagination.page > 0
-            ) {
-               this.pageSubject.next(this.currentPagination.page - 1);
-            } else {
-               this.pageSubject.next(this.currentPagination.page);
-            }
-         });
+      this.categoryIdToDelete = id;
+      this.isDeleteModalOpen = true;
+   }
+
+   confirmDelete() {
+      if (this.categoryIdToDelete) {
+         this.categoryService
+            .deleteCategory(this.categoryIdToDelete)
+            .subscribe({
+               next: () => {
+                  this.toastService.showSuccess(
+                     'Categoria excluída com sucesso.',
+                  );
+
+                  if (
+                     this.currentCategoriesList.length === 1 &&
+                     this.currentPagination.page > 0
+                  ) {
+                     this.pageSubject.next(this.currentPagination.page - 1);
+                  } else {
+                     this.pageSubject.next(this.currentPagination.page);
+                  }
+
+                  this.closeDeleteModal();
+               },
+               error: () => {
+                  this.toastService.showError('Erro ao excluir categoria.');
+                  this.closeDeleteModal();
+               },
+            });
       }
+   }
+
+   closeDeleteModal() {
+      this.isDeleteModalOpen = false;
+      this.categoryIdToDelete = null;
    }
 
    resetForm(): void {
@@ -258,6 +322,7 @@ export class CategoryManagementFeature implements OnInit {
       this.editMode = false;
       this.currentCategoryId = null;
       this.imagePreview = null;
+      this.isFormVisible = false;
       if (this.fileInput) {
          this.fileInput.nativeElement.value = '';
       }
