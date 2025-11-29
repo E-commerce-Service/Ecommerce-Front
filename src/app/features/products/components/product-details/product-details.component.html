@@ -1,6 +1,8 @@
-<div class="flex flex-row w-full pt-24 items-center justify-center">
-   <div class="container flex flex-col p-3 gap-8">
-      <div class="flex flex-col md:flex-row items-start w-full gap-8">
+<div
+   class="flex flex-col w-full pt-24 pb-32 md:pb-12 items-center justify-center min-h-screen bg-white"
+>
+   <div class="container mx-auto px-4 max-w-6xl">
+      <div class="flex flex-col md:flex-row items-start w-full gap-8 md:gap-12">
          <div class="w-full md:w-1/2">
             <div class="h-full w-full relative">
                <swiper-container
@@ -18,11 +20,15 @@
                   ) {
                      <swiper-slide>
                         <img
-                           class="w-full h-90 object-contain"
+                           class="w-full h-90 object-contain cursor-zoom-in"
                            [ngSrc]="imagePair.value | toRelativePath"
                            width="800"
                            height="800"
                            alt="{{ product.name }}"
+                           tabindex="0"
+                           priority
+                           (click)="openZoom(imagePair.value)"
+                           (keydown.enter)="openZoom(imagePair.value)"
                         />
                      </swiper-slide>
                   }
@@ -49,6 +55,7 @@
                            height="100"
                            tabindex="0"
                            alt="{{ product.name }} thumbnail"
+                           priority
                         />
                      </swiper-slide>
                   }
@@ -56,56 +63,124 @@
             </div>
          </div>
 
-         <div class="w-full md:w-1/2 flex flex-col gap-3">
-            <h1 class="text-body-lg md:text-head-md text-left">
-               {{ product.price | currency: "BRL" }}
-            </h1>
-            <h2 class="text-body-md md:text-title-xl font-title-xl">
+         <div class="w-full md:w-1/2 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+               <a
+                  [routerLink]="'/category/' + product.categoryName"
+                  class="px-2 py-1 text-xs font-bold uppercase bg-blue-50 text-blue-600 rounded-md tracking-wider"
+               >
+                  {{ product.categoryName || "Produto" }}
+               </a>
+               <div class="flex items-center gap-2">
+                  <app-stars [productRating]="product.rating"></app-stars>
+                  <span
+                     class="text-sm text-gray-500 underline decoration-dotted"
+                  >
+                     ({{ product.totalReviews }} avaliações)
+                  </span>
+               </div>
+            </div>
+
+            <h1
+               class="text-2xl md:text-4xl font-bold text-gray-900 leading-tight"
+            >
                {{ product.name }}
-            </h2>
-            <p class="w-full text-body md:text-body-md text-left">
-               {{ product.description }}
-            </p>
-            <div class="w-full flex flex-row items-center justify-start gap-4">
-               <app-stars [productRating]="product.rating"></app-stars>
-               <span>({{ product.totalReviews }})</span>
+            </h1>
+
+            <div class="border-b border-gray-100 pb-4">
+               <h2 class="text-3xl md:text-4xl font-bold text-green-600">
+                  {{ product.price | currency: "BRL" }}
+               </h2>
+               <p class="text-sm text-gray-400 mt-1">
+                  À vista no PIX ou em até 12x no cartão
+               </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 py-2">
+               <app-outlined-button
+                  [label]="product.stock + ' em estoque'"
+                  [textColor]="'text-green-600'"
+                  [icon]="'assets/icons/check-circle.svg'"
+               ></app-outlined-button>
+               <app-outlined-button
+                  [label]="
+                     product.soldCount <= 1
+                        ? product.soldCount + ' vendido'
+                        : product.soldCount + ' vendidos'
+                  "
+                  [textColor]="'text-orange-base'"
+                  [icon]="'assets/icons/sold-out.svg'"
+               ></app-outlined-button>
+            </div>
+
+            <div class="mt-2">
+               <h3
+                  class="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide"
+               >
+                  Sobre o produto
+               </h3>
+               <p
+                  class="text-gray-600 text-sm md:text-base leading-relaxed text-justify md:text-left"
+               >
+                  {{ product.description }}
+               </p>
+            </div>
+
+            <div
+               class="hidden md:flex flex-row items-center gap-4 mt-4 p-6 bg-gray-50 rounded-xl border border-gray-200"
+            >
+               <app-quantity-stepper
+                  [stock]="product.stock"
+                  (quantityChange)="updateQuantity($event)"
+               ></app-quantity-stepper>
+
+               <div class="flex-1">
+                  <app-button
+                     class="w-full"
+                     [label]="
+                        isAddingToCart
+                           ? 'Adicionando...'
+                           : 'Adicionar ao Carrinho'
+                     "
+                     [type]="'button'"
+                     title="Adicionar ao carrinho"
+                     [icon]="isAddingToCart ? '' : 'assets/images/cart.svg'"
+                     [disabled]="!product.stock || isAddingToCart"
+                     (clicked)="addToCart()"
+                  ></app-button>
+               </div>
             </div>
          </div>
       </div>
+   </div>
 
-      <div class="w-full pt-6 flex flex-col gap-6">
-         <div
-            class="flex flex-row flex-wrap items-center sm:justify-start justify-center gap-4"
-         >
-            <app-outlined-button
-               [label]="product.stock + ' em estoque'"
-               [textColor]="'text-green-600'"
-               [icon]="'assets/icons/check-circle.svg'"
-            ></app-outlined-button>
-            <app-outlined-button
-               [label]="
-                  product.soldCount <= 1
-                     ? product.soldCount + ' vendido'
-                     : product.soldCount + ' vendidos'
-               "
-               [textColor]="'text-orange-base'"
-               [icon]="'assets/icons/sold-out.svg'"
-            ></app-outlined-button>
-         </div>
-         <div
-            class="flex flex-row flex-wrap items-center sm:justify-start justify-center gap-4"
-         >
-            <app-quantity-stepper
-               [stock]="product.stock"
-            ></app-quantity-stepper>
-            <app-button
-               [label]="'Adicionar'"
-               [type]="'button'"
-               title="Adicionar ao carrinho"
-               [icon]="'assets/images/cart.svg'"
-               [disabled]="!product.stock"
-            ></app-button>
-         </div>
+   <div
+      class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 z-40 md:hidden flex items-center gap-3 animate-slide-up"
+   >
+      <div class="shrink-0">
+         <app-quantity-stepper
+            [stock]="product.stock"
+            (quantityChange)="updateQuantity($event)"
+         ></app-quantity-stepper>
+      </div>
+      <div class="flex-1">
+         <app-button
+            class="w-full"
+            [label]="isAddingToCart ? 'Adicionando...' : 'Adicionar'"
+            [type]="'button'"
+            title="Adicionar ao carrinho"
+            [icon]="isAddingToCart ? '' : 'assets/images/cart.svg'"
+            [disabled]="!product.stock || isAddingToCart"
+            (clicked)="addToCart()"
+         ></app-button>
       </div>
    </div>
 </div>
+
+@if (selectedImageForZoom) {
+   <app-image-preview
+      [imageSrc]="selectedImageForZoom"
+      [altText]="product.name"
+      (imageClose)="closeZoom()"
+   ></app-image-preview>
+}
