@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -7,48 +7,50 @@ import { FormsModule } from '@angular/forms';
    templateUrl: './quantity-stepper.component.html',
    styleUrl: './quantity-stepper.component.sass',
 })
-export class QuantityStepperComponent {
-   quantity = 1;
+export class QuantityStepperComponent implements OnInit {
    @Input() stock = 0;
+   @Input() initialValue = 1;
+   @Output() quantityChange = new EventEmitter<number>();
+
+   quantity = 1;
+
+   ngOnInit() {
+      this.quantity = this.initialValue;
+   }
 
    increment() {
-      this.quantity++;
+      if (this.quantity < this.stock) {
+         this.quantity++;
+         this.quantityChange.emit(this.quantity);
+      }
    }
 
    decrement() {
       if (this.quantity > 1) {
          this.quantity--;
-      }
-   }
-
-   preventMinus(event: KeyboardEvent) {
-      if (event.key === '-' || event.key === 'Subtract') {
-         event.preventDefault();
+         this.quantityChange.emit(this.quantity);
       }
    }
 
    onQuantityInput(event: Event) {
-      const input = event.target as HTMLInputElement;
-      const raw = input.value;
-      const val = Number(raw);
+      const inputElement = event.target as HTMLInputElement;
+      let value = parseInt(inputElement.value, 10);
 
-      if (val < 1 || raw === '') {
-         input.value = this.quantity.toString();
-         return;
+      if (isNaN(value) || value < 1) {
+         value = 1;
+      } else if (value > this.stock) {
+         value = this.stock;
       }
 
-      if (val > this.stock) {
-         input.value = this.stock.toString();
-         this.quantity = this.stock;
-         return;
-      }
+      this.quantity = value;
+      inputElement.value = this.quantity.toString();
 
-      if (val < 0) {
-         input.value = this.stock.toString();
-         this.quantity = 0;
-         return;
-      }
+      this.quantityChange.emit(this.quantity);
+   }
 
-      this.quantity = val;
+   preventMinus(event: KeyboardEvent) {
+      if (event.key === '-' || event.key === 'e') {
+         event.preventDefault();
+      }
    }
 }

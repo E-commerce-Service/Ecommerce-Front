@@ -1,13 +1,16 @@
-<div class="flex flex-row text-lg border border-gray-200 rounded-sm">
+<div
+   class="flex flex-row items-center border border-gray-200 rounded-md h-8 md:h-10"
+>
    <button
-      class="px-6 py-1 cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-10 transition-all duration-300"
+      class="h-full px-3 md:px-4 flex items-center justify-center cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 transition-all duration-300 text-gray-600 font-bold"
       (click)="decrement()"
       [disabled]="quantity <= 1"
    >
       -
    </button>
+
    <input
-      class="w-16 text-center border-0 focus:ring-0 focus:outline-none"
+      class="h-full w-8 md:w-12 text-center border-0 focus:ring-0 focus:outline-none text-sm md:text-base font-medium text-gray-900 appearance-none m-0 p-0"
       [(ngModel)]="quantity"
       type="number"
       [min]="1"
@@ -18,7 +21,7 @@
    />
 
    <button
-      class="px-6 py-1 cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-10 transition-all duration-300"
+      class="h-full px-3 md:px-4 flex items-center justify-center cursor-pointer hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 transition-all duration-300 text-gray-600 font-bold"
       (click)="increment()"
       [disabled]="quantity >= stock"
    >
