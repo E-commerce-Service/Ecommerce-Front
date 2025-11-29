@@ -1,0 +1,108 @@
+<div
+   class="w-full bg-white/95 backdrop-blur-md p-2 rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100 flex flex-col md:flex-row gap-3 transition-all duration-300"
+>
+   <div class="relative w-full md:flex-1 group">
+      <div
+         class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"
+      >
+         <svg
+            class="w-5 h-5 text-slate-400 group-focus-within:text-orange-base transition-colors"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+         >
+            <path
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               stroke-width="2"
+               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+         </svg>
+      </div>
+      <input
+         [formControl]="searchControl"
+         type="text"
+         class="block w-full pl-11 pr-4 py-3 text-sm font-medium text-slate-700 bg-slate-50 border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-orange-base/20 focus:border-orange-base placeholder-slate-400 transition-all outline-none"
+         [placeholder]="placeholder"
+      />
+   </div>
+
+   <div class="hidden md:block w-px bg-slate-200 my-2"></div>
+
+   <div class="flex gap-3 w-full md:w-auto">
+      <div class="relative w-full md:w-48 group">
+         <div
+            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+         >
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               class="w-4 h-4 text-slate-400 group-hover:text-orange-base transition-colors"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+            >
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
+               />
+            </svg>
+         </div>
+         <select
+            [formControl]="sortControl"
+            class="appearance-none block w-full pl-10 pr-10 py-3 text-sm font-medium text-slate-600 bg-slate-50 border-transparent rounded-xl hover:bg-slate-100 focus:bg-white focus:ring-2 focus:ring-orange-base/20 focus:border-orange-base cursor-pointer transition-all outline-none"
+         >
+            <option [ngValue]="null">Relevância</option>
+            <option [ngValue]="SortBy.PRICE">Preço</option>
+            <option [ngValue]="SortBy.NAME">Nome</option>
+            <option [ngValue]="SortBy.SOLD_COUNT">Mais Vendidos</option>
+            <option [ngValue]="SortBy.RATING">Avaliação</option>
+         </select>
+         <div
+            class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+         >
+            <svg
+               class="w-4 h-4 text-slate-400"
+               fill="none"
+               stroke="currentColor"
+               viewBox="0 0 24 24"
+            >
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+               ></path>
+            </svg>
+         </div>
+      </div>
+
+      <div class="relative w-36 group">
+         <select
+            [formControl]="directionControl"
+            class="appearance-none block w-full pl-4 pr-10 py-3 text-sm font-medium text-slate-600 bg-slate-50 border-transparent rounded-xl hover:bg-slate-100 focus:bg-white focus:ring-2 focus:ring-orange-base/20 focus:border-orange-base cursor-pointer transition-all outline-none"
+         >
+            <option [ngValue]="SortDirection.ASC">Crescente</option>
+            <option [ngValue]="SortDirection.DESC">Decrescente</option>
+         </select>
+         <div
+            class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+         >
+            <svg
+               class="w-4 h-4 text-slate-400"
+               fill="none"
+               stroke="currentColor"
+               viewBox="0 0 24 24"
+            >
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 9l4-4 4 4m0 6l-4 4-4-4"
+               ></path>
+            </svg>
+         </div>
+      </div>
+   </div>
+</div>
