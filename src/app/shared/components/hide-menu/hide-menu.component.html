@@ -42,6 +42,21 @@
          </a>
       }
 
+      @if (isLogged()) {
+         <a
+            class="pointer ml-5 mb-8 block"
+            routerLink="/orders/history"
+            routerLinkActive="active-link"
+            (click)="closeMenu()"
+         >
+            <p
+               class="text-white text-lg transform transition-transform duration-200 ease-in-out hover:scale-110"
+            >
+               Meus Pedidos
+            </p>
+         </a>
+      }
+
       @if (isAdmin) {
          <a
             class="pointer ml-5 mb-8 block"
