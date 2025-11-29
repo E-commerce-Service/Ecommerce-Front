@@ -1,36 +1,52 @@
 <div
    (click)="onCloseModal()"
    (keydown.enter)="onCloseModal()"
-   class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in animate-duration-300 animate-ease-out"
+   class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4 animate-fade-in animate-duration-300 animate-ease-out"
    tabindex="1"
 >
    <div
       (click)="$event.stopPropagation()"
       (keydown.enter)="$event.stopPropagation()"
-      class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-8 relative animate-jump-in animate-duration-300 animate-ease-out"
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 md:p-8 relative flex flex-col gap-6 animate-jump-in animate-duration-300 animate-ease-out"
       tabindex="1"
    >
-      <div class="flex items-start justify-between mb-4">
-         <h2 class="text-2xl md:text-3xl text-primary font-bold">
-            Qual a sua opinião?
-         </h2>
+      <div class="flex items-start justify-between">
+         <div>
+            <h2
+               class="text-xl md:text-2xl text-primary font-bold leading-tight"
+            >
+               Qual a sua opinião?
+            </h2>
+            <p class="text-sm md:text-base text-gray-500 mt-1">
+               Avalie sua experiência com o produto.
+            </p>
+         </div>
+
          <button
             (click)="onCloseModal()"
-            tabindex="1"
-            class="p-1 rounded-full cursor-pointer text-gray-400 hover:text-primary hover:bg-gray-100 transition-colors"
+            class="p-2 -mt-2 -mr-2 rounded-full text-gray-400 hover:text-primary hover:bg-gray-100 transition-colors"
             aria-label="Fechar modal"
             title="Fechar"
          >
-            <img src="assets/icons/star.svg" alt="" />
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke-width="2"
+               stroke="currentColor"
+               class="w-5 h-5"
+            >
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+               />
+            </svg>
          </button>
       </div>
 
-      <p class="text-base text-gray-500 mb-8">
-         Selecione uma nota e, se quiser, deixe um comentário.
-      </p>
-
-      <div class="space-y-8 flex flex-col items-center justify-center">
-         <div class="text-center">
+      <div class="flex flex-col gap-6">
+         <div class="flex flex-col items-center justify-center py-2">
             <app-interactive-stars
                [rating]="rating"
                (ratingChange)="onRatingChanged($event)"
@@ -38,7 +54,7 @@
             </app-interactive-stars>
 
             <p
-               class="text-orange-base font-semibold mt-3 h-6 transition-opacity duration-300"
+               class="text-orange-base font-semibold mt-2 h-5 text-sm md:text-base transition-opacity duration-300"
                [class.opacity-0]="rating === 0"
             >
                {{ ratingLabels[rating] || "" }}
@@ -48,44 +64,49 @@
          <div class="w-full">
             <label
                for="reviewContent"
-               class="block text-base font-semibold text-primary mb-2"
+               class="block text-sm font-semibold text-primary mb-2"
             >
-               Seu comentário (opcional)
+               Seu comentário
+               <span class="font-normal text-gray-400">(opcional)</span>
             </label>
             <div class="relative">
                <textarea
                   id="reviewContent"
                   [(ngModel)]="content"
-                  rows="5"
+                  rows="4"
                   maxlength="500"
-                  placeholder="Como foi sua experiência com o produto?"
+                  placeholder="Conte como foi sua experiência..."
                   tabindex="1"
-                  class="w-full border border-gray-300 rounded-lg p-3 pr-14 placeholder:text-gray-500 focus:border-transparent transition resize-none"
+                  class="w-full border border-gray-300 rounded-xl p-3 pr-14 text-sm md:text-base placeholder:text-gray-400 focus:ring-2 focus:ring-orange-base/20 focus:border-orange-base transition resize-none outline-none"
                ></textarea>
-               <span class="absolute bottom-3 right-4 text-xs text-gray-400">
-                  {{ content.length }} / 500
+               <span
+                  class="absolute bottom-3 right-3 text-xs text-gray-400 font-medium"
+               >
+                  {{ content.length }}/500
                </span>
             </div>
          </div>
       </div>
 
-      <div class="mt-10 flex items-center justify-end gap-4">
-         <button
+      <div
+         class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-end gap-3 mt-2"
+      >
+         <app-button
             (click)="onCloseModal()"
-            tabindex="1"
-            class="px-6 py-2.5 rounded-lg text-primary font-semibold hover:bg-gray-100 transition-colors"
-         >
-            Cancelar
-         </button>
+            [label]="'Cancelar'"
+            [color]="
+               'bg-gray-600 hover:bg-gray-700 border border-gray-300 text-gray-700 hover:bg-gray-50'
+            "
+            class="w-full sm:w-auto"
+         ></app-button>
 
-         <button
+         <app-button
             (click)="onSubmit()"
+            [label]="'Enviar Avaliação'"
             [disabled]="rating === 0"
-            tabindex="1"
-            class="px-6 py-2.5 rounded-lg bg-orange-base text-white font-bold transition-all duration-200 transform shadow-md hover:bg-orange-dark hover:scale-105 disabled:bg-gray-300 disabled:shadow-none disabled:transform-none disabled:cursor-not-allowed"
-         >
-            Avaliar
-         </button>
+            [color]="'bg-orange-base hover:bg-orange-dark'"
+            class="w-full sm:w-auto"
+         ></app-button>
       </div>
    </div>
 </div>

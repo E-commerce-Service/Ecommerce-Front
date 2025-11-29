@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InteractiveStarsComponent } from '../interactive-stars/interactive-stars.component';
+import { ButtonComponent } from '../button/button.component';
 
 export interface ReviewData {
    rating: number;
@@ -9,7 +10,7 @@ export interface ReviewData {
 
 @Component({
    selector: 'app-create-review-modal',
-   imports: [FormsModule, InteractiveStarsComponent],
+   imports: [FormsModule, InteractiveStarsComponent, ButtonComponent],
    templateUrl: './create-review-modal.component.html',
    styleUrl: './create-review-modal.component.sass',
 })
