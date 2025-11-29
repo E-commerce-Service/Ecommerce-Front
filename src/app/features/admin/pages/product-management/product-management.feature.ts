@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import {
    FormBuilder,
-   FormControl,
    FormGroup,
    ReactiveFormsModule,
    Validators,
@@ -17,8 +16,6 @@ import { CategoryService } from '../../../../core/services/category.service';
 import {
    BehaviorSubject,
    catchError,
-   debounceTime,
-   distinctUntilChanged,
    finalize,
    map,
    Observable,
@@ -29,10 +26,16 @@ import {
 import { Pagination } from '../../../../core/@types/Pagination';
 import { Product } from '../../../../core/@types/Product';
 import { ProductCategoryResponse } from '../../../../core/@types/ProductCategoryResponse';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { ProductTableComponent } from '../../components/product-table/product-table.component';
 import { SortBy } from '../../../../core/enum/SortBy';
 import { SortDirection } from '../../../../core/enum/SortDirection';
+import {
+   FilterBarComponent,
+   FilterChangeEvent,
+} from '../../../../shared/components/filter-bar/filter-bar.component';
+import { ToastService } from '../../../../core/services/toast.service';
+import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal/alert-modal.component';
 
 const MAX_SIZE = 10 * 1024 * 1024;
 
@@ -46,7 +49,14 @@ interface ProductFilterState {
 
 @Component({
    selector: 'app-product-management',
-   imports: [AsyncPipe, ReactiveFormsModule, ProductTableComponent],
+   imports: [
+      AsyncPipe,
+      ReactiveFormsModule,
+      ProductTableComponent,
+      FilterBarComponent,
+      NgClass,
+      AlertModalComponent,
+   ],
    templateUrl: './product-management.feature.html',
    styleUrl: './product-management.feature.sass',
 })
@@ -54,6 +64,13 @@ export class ProductManagementFeature implements OnInit {
    private fb = inject(FormBuilder);
    private productService = inject(ProductService);
    private categoryService = inject(CategoryService);
+   private toastService = inject(ToastService);
+   isDeleteModalOpen = false;
+   productIdToDelete: number | null = null;
+
+   isFormVisible = false;
+
+   @ViewChild(FilterBarComponent) filterBar!: FilterBarComponent;
 
    private initialFilterState: ProductFilterState = {
       page: 0,
@@ -67,13 +84,6 @@ export class ProductManagementFeature implements OnInit {
       this.initialFilterState,
    );
 
-   searchControl = new FormControl('');
-   sortControl = new FormControl<SortBy | null>(null);
-   directionControl = new FormControl<SortDirection>(SortDirection.ASC);
-
-   readonly SortBy = SortBy;
-   readonly SortDirection = SortDirection;
-
    productsState$!: Observable<{
       loading: boolean;
       products: Pagination<Product>;
@@ -86,27 +96,23 @@ export class ProductManagementFeature implements OnInit {
    productForm!: FormGroup;
    editMode = false;
    currentProductId: number | null = null;
+   isSubmitting = false;
 
    selectedCoverFile: File | null = null;
    coverPreview: string | null = null;
-
    selectedOtherFiles: File[] = [];
    otherPreviews: string[] = [];
-
    existingImages: { publicId: string; url: string }[] = [];
    publicIdsToDelete: string[] = [];
 
-   isSubmitting = false;
+   isDraggingCover = false;
 
    @ViewChild('coverInput') coverInput!: ElementRef<HTMLInputElement>;
    @ViewChild('othersInput') othersInput!: ElementRef<HTMLInputElement>;
 
-   isDraggingCover = false;
-
    ngOnInit(): void {
       this.initForm();
       this.setupProductsStream();
-      this.setupFilters();
       this.loadCategories();
    }
 
@@ -120,41 +126,18 @@ export class ProductManagementFeature implements OnInit {
       });
    }
 
+   toggleForm() {
+      if (this.isFormVisible) {
+         this.resetForm();
+      } else {
+         this.isFormVisible = true;
+      }
+   }
+
    loadCategories() {
       this.categories$ = this.categoryService
          .getCategories(0, 100)
          .pipe(map((res) => res.data));
-   }
-
-   setupFilters() {
-      this.searchControl.valueChanges
-         .pipe(debounceTime(400), distinctUntilChanged())
-         .subscribe((term) => {
-            const currentState = this.filterSubject.value;
-            this.filterSubject.next({
-               ...currentState,
-               name: term || '',
-               page: 0,
-            });
-         });
-
-      this.sortControl.valueChanges.subscribe((sort) => {
-         const currentState = this.filterSubject.value;
-         this.filterSubject.next({
-            ...currentState,
-            sortBy: sort || undefined,
-            page: 0,
-         });
-      });
-
-      this.directionControl.valueChanges.subscribe((dir) => {
-         const currentState = this.filterSubject.value;
-         this.filterSubject.next({
-            ...currentState,
-            sortDirection: dir || SortDirection.ASC,
-            page: 0,
-         });
-      });
    }
 
    setupProductsStream() {
@@ -211,6 +194,17 @@ export class ProductManagementFeature implements OnInit {
       );
    }
 
+   onFilterChange(event: FilterChangeEvent) {
+      const currentState = this.filterSubject.value;
+      this.filterSubject.next({
+         ...currentState,
+         name: event.name,
+         sortBy: event.sortBy,
+         sortDirection: event.sortDirection,
+         page: 0,
+      });
+   }
+
    onCoverDragOver(event: DragEvent) {
       event.preventDefault();
       event.stopPropagation();
@@ -232,16 +226,19 @@ export class ProductManagementFeature implements OnInit {
          const file = event.dataTransfer.files[0];
          if (file.type.startsWith('image/')) {
             this.processCoverFile(file);
+         } else {
+            this.toastService.showWarning(
+               'Por favor, solte apenas arquivos de imagem.',
+            );
          }
       }
    }
 
    private processCoverFile(file: File) {
       if (file.size > MAX_SIZE) {
-         alert('A imagem é muito grande! Máximo 10MB.');
+         this.toastService.showWarning('A imagem é muito grande! Máximo 10MB.');
          return;
       }
-
       this.selectedCoverFile = file;
       const reader = new FileReader();
       reader.onload = () => (this.coverPreview = reader.result as string);
@@ -250,9 +247,8 @@ export class ProductManagementFeature implements OnInit {
 
    onCoverChange(event: Event): void {
       const input = event.target as HTMLInputElement;
-      if (input.files && input.files.length > 0) {
+      if (input.files && input.files.length > 0)
          this.processCoverFile(input.files[0]);
-      }
    }
 
    onOthersChange(event: Event): void {
@@ -281,10 +277,12 @@ export class ProductManagementFeature implements OnInit {
    }
 
    onSubmit(): void {
-      if (this.productForm.invalid) return;
+      if (this.productForm.invalid) {
+         this.productForm.markAllAsTouched();
+         return;
+      }
 
       const formVal = this.productForm.value;
-
       this.isSubmitting = true;
 
       if (this.editMode) {
@@ -292,7 +290,6 @@ export class ProductManagementFeature implements OnInit {
             ...formVal,
             publicIdsToDelete: this.publicIdsToDelete,
          };
-
          this.productService
             .updateProduct(
                this.currentProductId!,
@@ -301,17 +298,23 @@ export class ProductManagementFeature implements OnInit {
                this.selectedOtherFiles,
             )
             .pipe(finalize(() => (this.isSubmitting = false)))
-            .subscribe(() => {
-               this.resetForm();
-               this.filterSubject.next(this.filterSubject.value);
+            .subscribe({
+               next: () => {
+                  this.toastService.showSuccess(
+                     'Produto atualizado com sucesso!',
+                  );
+                  this.resetForm();
+                  this.filterSubject.next(this.filterSubject.value);
+               },
+               error: () =>
+                  this.toastService.showError('Erro ao atualizar produto.'),
             });
       } else {
          if (!this.selectedCoverFile) {
-            alert('Imagem de capa é obrigatória!');
+            this.toastService.showWarning('Imagem de capa é obrigatória!');
             this.isSubmitting = false;
             return;
          }
-
          this.productService
             .createProduct(
                formVal,
@@ -319,18 +322,23 @@ export class ProductManagementFeature implements OnInit {
                this.selectedOtherFiles,
             )
             .pipe(finalize(() => (this.isSubmitting = false)))
-            .subscribe(() => {
-               this.resetForm();
-               this.searchControl.setValue('');
-               this.filterSubject.next(this.initialFilterState);
+            .subscribe({
+               next: () => {
+                  this.toastService.showSuccess('Produto criado com sucesso!');
+                  this.resetForm();
+                  if (this.filterBar) this.filterBar.reset();
+                  this.filterSubject.next(this.initialFilterState);
+               },
+               error: () =>
+                  this.toastService.showError('Erro ao criar produto.'),
             });
       }
    }
 
    onEdit(product: Product): void {
+      this.isFormVisible = true;
       this.editMode = true;
       this.currentProductId = product.id || null;
-
       this.productForm.patchValue({
          name: product.name,
          description: product.description,
@@ -338,30 +346,44 @@ export class ProductManagementFeature implements OnInit {
          stock: product.stock,
          categoryName: product.categoryName,
       });
-
       this.coverPreview = product.coverImageUrl;
       this.selectedCoverFile = null;
-
       this.existingImages = [];
       if (product.imageUrls) {
          Object.entries(product.imageUrls).forEach(([publicId, url]) => {
             this.existingImages.push({ publicId, url });
          });
       }
-
       this.publicIdsToDelete = [];
       this.selectedOtherFiles = [];
       this.otherPreviews = [];
-
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
    }
 
    onDelete(id: number): void {
-      if (confirm('Deseja excluir este produto?')) {
-         this.productService.deleteProduct(id).subscribe(() => {
-            this.filterSubject.next(this.filterSubject.value);
+      this.productIdToDelete = id;
+      this.isDeleteModalOpen = true;
+   }
+
+   confirmDelete() {
+      if (this.productIdToDelete) {
+         this.productService.deleteProduct(this.productIdToDelete).subscribe({
+            next: () => {
+               this.toastService.showSuccess('Produto excluído com sucesso.');
+               this.filterSubject.next(this.filterSubject.value);
+               this.closeDeleteModal();
+            },
+            error: () => {
+               this.toastService.showError('Erro ao excluir produto.');
+               this.closeDeleteModal();
+            },
          });
       }
+   }
+
+   closeDeleteModal() {
+      this.isDeleteModalOpen = false;
+      this.productIdToDelete = null;
    }
 
    resetForm(): void {
@@ -374,6 +396,7 @@ export class ProductManagementFeature implements OnInit {
       this.otherPreviews = [];
       this.existingImages = [];
       this.publicIdsToDelete = [];
+      this.isFormVisible = false;
       if (this.coverInput) this.coverInput.nativeElement.value = '';
       if (this.othersInput) this.othersInput.nativeElement.value = '';
    }
