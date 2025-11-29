@@ -20,6 +20,7 @@ import { IMAGE_LOADER, ImageLoaderConfig } from '@angular/common';
 import { AuthService } from './core/services/auth.service';
 import { lastValueFrom, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 const customImageLoader = (config: ImageLoaderConfig) => {
    if (config.src.includes('assets/')) {
@@ -59,6 +60,7 @@ export const appConfig: ApplicationConfig = {
       provideZoneChangeDetection({ eventCoalescing: true }),
       provideRouter(routes),
       CookieService,
+      provideAnimations(),
       provideAppInitializer(() => {
          const authService = inject(AuthService);
 
