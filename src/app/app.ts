@@ -6,11 +6,18 @@ import { Toast } from './core/@types/Toast';
 import { AsyncPipe } from '@angular/common';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { ToastService } from './core/services/toast.service';
+import { FooterComponent } from './shared/components/footer/footer.component';
 
 @Component({
    standalone: true,
    selector: 'app-root',
-   imports: [RouterOutlet, NavbarComponent, AsyncPipe, ToastComponent],
+   imports: [
+      RouterOutlet,
+      NavbarComponent,
+      AsyncPipe,
+      ToastComponent,
+      FooterComponent,
+   ],
    templateUrl: './app.html',
    styleUrl: './app.sass',
 })
