@@ -1,143 +1,269 @@
-<div class="mt-10 w-full flex flex-col px-6 items-center">
-   <div class="py-6 mb-6 border-b border-gray-200 w-full text-center">
-      <h2 class="text-body-md text-gray-500">Avaliações de Clientes</h2>
-   </div>
-   <app-create-review-button
-      (addReviewClick)="openReviewModal()"
-   ></app-create-review-button>
-</div>
-@if (reviewsState$ | async; as state) {
-   @if (state.loading) {
-      <app-loading-container
-         [message]="'Carregando avaliações...'"
-      ></app-loading-container>
-   }
-   @if (state.error) {
-      <app-error-container
-         [errorMessage]="'Erro ao carregar avaliações.'"
-      ></app-error-container>
-   } @else {
-      @if (state.reviews.data.length > 0 && state.reviews.data; as reviews) {
-         <div class="w-full flex flex-col">
-            <div
-               class="flex flex-col md:flex-row w-full justify-between items-center px-6 pt-5 gap-4"
-            >
-               <h3 class="text-lg text-slate-500">
-                  {{ state.reviews.pagination.totalElements }}
-                  {{
-                     state.reviews.pagination.totalElements === 1
-                        ? "Avaliação"
-                        : "Avaliações"
-                  }}
-               </h3>
-
-               <div class="flex items-center gap-2">
-                  <label
-                     for="sort-reviews"
-                     class="text-body font-semibold text-gray-700"
-                     >Ordenar por:</label
-                  >
-                  <select
-                     id="sort-reviews"
-                     (change)="onSortChange($event)"
-                     class="border border-gray-300 rounded-md p-2 text-body focus:ring-2 focus:ring-orange-base focus:border-orange-base transition"
-                  >
-                     @for (option of sortOptions; track option.value) {
-                        <option [value]="option.value">
-                           {{ option.label }}
-                        </option>
-                     }
-                  </select>
-               </div>
+<section class="w-full pb-20 pt-8 bg-gray-50">
+   <div class="container mx-auto px-4 max-w-5xl">
+      <div
+         class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
+      >
+         <div
+            class="p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-6"
+         >
+            <div>
+               <h2 class="text-2xl font-bold text-gray-900">
+                  Avaliações de Clientes
+               </h2>
+               <p class="text-sm text-gray-500 mt-1">
+                  Veja o que quem comprou está dizendo
+               </p>
             </div>
-            <div class="flex-1 overflow-y-auto p-6 space-y-4">
-               @for (review of reviews; track review.reviewId) {
-                  <app-review-card
-                     [review]="review"
-                     (like)="handleLike($event)"
-                     (dislike)="handleDislike($event)"
-                     [commentState]="commentsMap.get(review.reviewId)"
-                     (loadComments)="loadComments($event)"
-                     (showLessComments)="handleShowLessComments($event)"
-                     (toggleComments)="handleToggleComments($event)"
-                     (submitReply)="handleSubmittedReply($event)"
-                     (delete)="handleDeleteRequest($event)"
-                     (commentDelete)="handleCommentDeleteRequest($event)"
-                     (commentLike)="handleCommentLike($event)"
-                     (commentDislike)="handleCommentDislike($event)"
-                  ></app-review-card>
+
+            <div class="shrink-0">
+               <app-create-review-button
+                  (addReviewClick)="openReviewModal()"
+               ></app-create-review-button>
+            </div>
+         </div>
+
+         <div class="min-h-[300px]">
+            @if (reviewsState$ | async; as state) {
+               @if (state.loading) {
+                  <div class="py-20 flex justify-center">
+                     <app-loading-container
+                        [message]="'Carregando avaliações...'"
+                     ></app-loading-container>
+                  </div>
                }
-            </div>
 
-            @if (state.reviews.pagination.totalPages > 1) {
-               <div class="flex justify-center items-center gap-2 py-6">
-                  <button
-                     (click)="onPageChange(state.reviews.pagination.page - 1)"
-                     [disabled]="state.reviews.pagination.page === 0"
-                     class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
-                  >
-                     Anterior
-                  </button>
-
-                  @for (
-                     page of getPageNumbers(
-                        state.reviews.pagination.page,
-                        state.reviews.pagination.totalPages
-                     );
-                     track page
+               @if (state.error) {
+                  <div class="py-12 px-6">
+                     <app-error-container
+                        [errorMessage]="
+                           'Não foi possível carregar as avaliações.'
+                        "
+                     ></app-error-container>
+                  </div>
+               } @else {
+                  @if (
+                     state.reviews.data.length > 0 && state.reviews.data;
+                     as reviews
                   ) {
-                     <button
-                        (click)="onPageChange(page)"
-                        [class.bg-orange-base]="
-                           page === state.reviews.pagination.page
-                        "
-                        [class.text-white]="
-                           page === state.reviews.pagination.page
-                        "
-                        [class.bg-white]="
-                           page !== state.reviews.pagination.page
-                        "
-                        [class.text-gray-700]="
-                           page !== state.reviews.pagination.page
-                        "
-                        class="w-10 h-10 rounded-md border border-gray-300 text-sm font-medium hover:bg-gray-50 transition"
-                     >
-                        {{ page + 1 }}
-                     </button>
-                  }
+                     <div class="flex flex-col">
+                        <div
+                           class="bg-gray-50/50 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-gray-100"
+                        >
+                           <span
+                              class="text-sm font-semibold text-gray-600 bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm"
+                           >
+                              {{ state.reviews.pagination.totalElements }}
+                              {{
+                                 state.reviews.pagination.totalElements === 1
+                                    ? "Avaliação"
+                                    : "Avaliações"
+                              }}
+                           </span>
 
-                  <button
-                     (click)="onPageChange(state.reviews.pagination.page + 1)"
-                     [disabled]="
-                        state.reviews.pagination.page >=
-                        state.reviews.pagination.totalPages - 1
-                     "
-                     class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
-                  >
-                     Próxima
-                  </button>
-               </div>
+                           <div class="flex items-center gap-3 text-sm">
+                              <label
+                                 for="sort-reviews"
+                                 class="text-gray-500 font-medium"
+                                 >Ordenar:</label
+                              >
+                              <div class="relative">
+                                 <select
+                                    id="sort-reviews"
+                                    (change)="onSortChange($event)"
+                                    class="appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-base/20 focus:border-orange-base cursor-pointer hover:border-gray-400 transition-colors text-sm font-medium"
+                                 >
+                                    @for (
+                                       option of sortOptions;
+                                       track option.value
+                                    ) {
+                                       <option [value]="option.value">
+                                          {{ option.label }}
+                                       </option>
+                                    }
+                                 </select>
+                                 <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500"
+                                 >
+                                    <svg
+                                       class="h-4 w-4"
+                                       fill="none"
+                                       viewBox="0 0 24 24"
+                                       stroke="currentColor"
+                                    >
+                                       <path
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          stroke-width="2"
+                                          d="M19 9l-7 7-7-7"
+                                       />
+                                    </svg>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+
+                        <div class="p-6 space-y-6">
+                           @for (review of reviews; track review.reviewId) {
+                              <div
+                                 class="border-b border-gray-100 last:border-0 pb-6 last:pb-0 animate-fade-in-up"
+                              >
+                                 <app-review-card
+                                    [review]="review"
+                                    (like)="handleLike($event)"
+                                    (dislike)="handleDislike($event)"
+                                    [commentState]="
+                                       commentsMap.get(review.reviewId)
+                                    "
+                                    (loadComments)="loadComments($event)"
+                                    (showLessComments)="
+                                       handleShowLessComments($event)
+                                    "
+                                    (toggleComments)="
+                                       handleToggleComments($event)
+                                    "
+                                    (submitReply)="handleSubmittedReply($event)"
+                                    (delete)="handleDeleteRequest($event)"
+                                    (commentDelete)="
+                                       handleCommentDeleteRequest($event)
+                                    "
+                                    (commentLike)="handleCommentLike($event)"
+                                    (commentDislike)="
+                                       handleCommentDislike($event)
+                                    "
+                                 ></app-review-card>
+                              </div>
+                           }
+                        </div>
+
+                        @if (state.reviews.pagination.totalPages > 1) {
+                           <div
+                              class="flex justify-center items-center gap-2 py-8 border-t border-gray-100 bg-gray-50/30"
+                           >
+                              <button
+                                 (click)="
+                                    onPageChange(
+                                       state.reviews.pagination.page - 1
+                                    )
+                                 "
+                                 [disabled]="
+                                    state.reviews.pagination.page === 0
+                                 "
+                                 class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-orange-base hover:text-white hover:border-orange-base disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-gray-600 disabled:cursor-not-allowed transition-all shadow-sm"
+                                 title="Anterior"
+                              >
+                                 <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                 >
+                                    <path
+                                       stroke-linecap="round"
+                                       stroke-linejoin="round"
+                                       stroke-width="2"
+                                       d="M15 19l-7-7 7-7"
+                                    ></path>
+                                 </svg>
+                              </button>
+
+                              <div class="flex gap-1">
+                                 @for (
+                                    page of getPageNumbers(
+                                       state.reviews.pagination.page,
+                                       state.reviews.pagination.totalPages
+                                    );
+                                    track page
+                                 ) {
+                                    <button
+                                       (click)="onPageChange(page)"
+                                       [class.bg-orange-base]="
+                                          page === state.reviews.pagination.page
+                                       "
+                                       [class.text-white]="
+                                          page === state.reviews.pagination.page
+                                       "
+                                       [class.border-orange-base]="
+                                          page === state.reviews.pagination.page
+                                       "
+                                       [class.bg-white]="
+                                          page !== state.reviews.pagination.page
+                                       "
+                                       [class.text-gray-700]="
+                                          page !== state.reviews.pagination.page
+                                       "
+                                       class="w-10 h-10 rounded-full border border-gray-200 text-sm font-medium hover:border-orange-base hover:text-orange-base transition-all shadow-sm flex items-center justify-center"
+                                    >
+                                       {{ page + 1 }}
+                                    </button>
+                                 }
+                              </div>
+
+                              <button
+                                 (click)="
+                                    onPageChange(
+                                       state.reviews.pagination.page + 1
+                                    )
+                                 "
+                                 [disabled]="
+                                    state.reviews.pagination.page >=
+                                    state.reviews.pagination.totalPages - 1
+                                 "
+                                 class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-orange-base hover:text-white hover:border-orange-base disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-gray-600 disabled:cursor-not-allowed transition-all shadow-sm"
+                                 title="Próxima"
+                              >
+                                 <svg
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                 >
+                                    <path
+                                       stroke-linecap="round"
+                                       stroke-linejoin="round"
+                                       stroke-width="2"
+                                       d="M9 5l7 7-7 7"
+                                    ></path>
+                                 </svg>
+                              </button>
+                           </div>
+                        }
+                     </div>
+                  } @else {
+                     <div
+                        class="text-center py-20 px-6 flex flex-col items-center justify-center animate-fade-in"
+                     >
+                        <div class="bg-gray-50 p-6 rounded-full mb-4">
+                           <img
+                              ngSrc="assets/icons/star-outline.svg"
+                              alt="Nenhuma avaliação"
+                              width="48"
+                              height="48"
+                              class="opacity-40 grayscale"
+                           />
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">
+                           Ainda não há avaliações
+                        </h3>
+                        <p class="text-gray-500 max-w-md mx-auto">
+                           Sua opinião é muito importante! Seja o primeiro a
+                           compartilhar sua experiência com este produto.
+                        </p>
+                        <div class="mt-8">
+                           <button
+                              (click)="openReviewModal()"
+                              class="text-orange-base font-semibold hover:underline"
+                           >
+                              Escrever uma avaliação agora
+                           </button>
+                        </div>
+                     </div>
+                  }
+               }
             }
          </div>
-      } @else {
-         <div class="text-center py-10 px-6">
-            <img
-               ngSrc="assets/icons/star-outline.svg"
-               alt="Nenhuma avaliação"
-               width="64"
-               height="64"
-               class="mx-auto mb-4 opacity-50"
-            />
-            <h3 class="text-xl font-semibold text-gray-700">
-               Seja o primeiro a avaliar!
-            </h3>
-            <p class="text-gray-500 mt-2 mb-6">
-               Sua opinião é muito importante e ajuda outros compradores.
-            </p>
-         </div>
-      }
-   }
-}
+      </div>
+   </div>
+</section>
 
 @if (isModalOpen) {
    <app-create-review-modal
@@ -151,8 +277,8 @@
       [title]="'Confirmar Exclusão'"
       [message]="
          itemToDelete?.type === 'comment'
-            ? 'Você tem certeza que deseja excluir este comentário? Esta ação não pode ser desfeita.'
-            : 'Você tem certeza que deseja excluir esta avaliação? Esta ação não pode ser desfeita.'
+            ? 'Você tem certeza que deseja excluir este comentário?'
+            : 'Você tem certeza que deseja excluir esta avaliação?'
       "
       [confirmButtonText]="'Excluir'"
       (alertClose)="closeDeleteModal()"
