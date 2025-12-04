@@ -82,29 +82,4 @@ export class CategorySidebarComponent implements OnInit {
          }),
       );
    }
-
-   loadAllProducts() {
-      this.productsState$ = this.productService.getAllProducts().pipe(
-         map((data) => ({
-            loading: false,
-            products: data,
-            error: false,
-            errorMessage: '',
-         })),
-         startWith({
-            loading: true,
-            products: this.initialProductState,
-            error: false,
-            errorMessage: '',
-         }),
-         catchError((err) => {
-            return of({
-               loading: false,
-               products: this.initialProductState,
-               error: true,
-               errorMessage: err.message,
-            });
-         }),
-      );
-   }
 }
