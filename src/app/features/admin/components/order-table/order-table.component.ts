@@ -19,10 +19,7 @@ export class OrderTableComponent {
    readonly OrderStatus = OrderStatus;
 
    calculateTotal(order: OrderShoppingResponse): number {
-      return order.items.reduce(
-         (acc, item) => acc + item.price,
-         0,
-      );
+      return order.items.reduce((acc, item) => acc + item.price, 0);
    }
 
    getStatusColor(status: OrderStatus): string {

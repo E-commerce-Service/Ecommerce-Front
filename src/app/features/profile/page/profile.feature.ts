@@ -20,7 +20,7 @@ export class ProfileFeature implements OnInit {
       this.authService.getAuthenticatedUser().subscribe({
          error: () => {
             this.router.navigate(['/login']);
-         }
+         },
       });
    }
 

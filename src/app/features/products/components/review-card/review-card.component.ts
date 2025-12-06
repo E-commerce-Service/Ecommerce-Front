@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ReplyFormComponent } from '../../../../shared/components/reply-form/reply-form.component';
 import { CommentReactionPayload } from '../../../../core/@types/EventsPayload/CommentReactionPayload';
-import {ToastService} from '../../../../core/services/toast.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
    selector: 'app-review-card',

@@ -388,6 +388,6 @@ export class ReviewsComponent implements OnInit, OnDestroy {
    }
 
    protected handleReviewEdit() {
-      this.toastService.showInfo("Upcoming feature: Edit review.");
+      this.toastService.showInfo('Upcoming feature: Edit review.');
    }
 }

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { OrderShoppingResponse } from '../@types/OrderShoppingResponse';
 import { OrderHistoryResponse } from '../@types/OrderHistoryResponse';
 import { Pagination } from '../@types/Pagination';
-import {CreateOrderRequest} from '../@types/CreateOrderRequest';
+import { CreateOrderRequest } from '../@types/CreateOrderRequest';
 
 @Injectable({
    providedIn: 'root',

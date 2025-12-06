@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Product } from '../../../../core/@types/Product';
-import {CurrencyPipe, NgClass, NgOptimizedImage} from '@angular/common';
+import { CurrencyPipe, NgClass, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({

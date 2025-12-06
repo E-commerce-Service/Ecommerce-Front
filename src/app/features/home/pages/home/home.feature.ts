@@ -120,7 +120,6 @@ export class HomeFeature implements OnInit {
    loadProducts(isLoadMore = false) {
       const currentState = this.productsState$.value;
 
-
       if (isLoadMore) {
          this.productsState$.next({ ...currentState, loadingMore: true });
       } else {
@@ -135,11 +134,10 @@ export class HomeFeature implements OnInit {
             undefined,
             this.currentPage,
             this.pageSize,
-            true
+            true,
          )
          .pipe(
             finalize(() => {
-
                const current = this.productsState$.value;
                this.productsState$.next({
                   ...current,

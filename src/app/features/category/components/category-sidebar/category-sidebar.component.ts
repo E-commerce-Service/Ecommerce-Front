@@ -4,7 +4,6 @@ import { AsyncPipe } from '@angular/common';
 import { CategoryService } from '../../../../core/services/category.service';
 import { catchError, map, Observable, of, startWith } from 'rxjs';
 
-
 interface CategoryCardData {
    image: string;
    alt: string;

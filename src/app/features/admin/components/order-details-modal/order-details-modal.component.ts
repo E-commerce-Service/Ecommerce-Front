@@ -18,9 +18,6 @@ export class OrderDetailsModalComponent {
    readonly OrderStatus = OrderStatus;
 
    calculateTotal(): number {
-      return this.order.items.reduce(
-         (acc, item) => acc + item.price,
-         0,
-      );
+      return this.order.items.reduce((acc, item) => acc + item.price, 0);
    }
 }

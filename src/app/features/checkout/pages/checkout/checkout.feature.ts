@@ -1,21 +1,24 @@
-import {Component, inject, OnInit, ViewChild} from '@angular/core';
-import {CartService} from '../../../../core/services/cart.service';
-import {AuthService} from '../../../../core/services/auth.service';
-import {OrderService} from '../../../../core/services/order.service';
-import {ToastService} from '../../../../core/services/toast.service';
-import {Router, RouterLink} from '@angular/router';
-import {combineLatest, map, Observable} from 'rxjs';
-import {Cart} from '../../../../core/@types/Cart';
-import {User} from '../../../../core/@types/User';
-import {AsyncPipe, CurrencyPipe, NgOptimizedImage} from '@angular/common';
-import {ToRelativePathPipe} from '../../../../shared/pipes/to-relative-path.pipe';
-import {ButtonComponent} from '../../../../shared/components/button/button.component';
-import {LoadingContainerComponent} from '../../../../shared/components/loading-container/loading-container.component';
-import {StripeCardComponent, StripeService} from 'ngx-stripe';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {StripeCardElementOptions, StripeElementsOptions} from '@stripe/stripe-js';
-import {CreateOrderRequest} from '../../../../core/@types/CreateOrderRequest';
-import {PaymentType} from '../../../../core/enum/PaymentType';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { CartService } from '../../../../core/services/cart.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { OrderService } from '../../../../core/services/order.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { Router, RouterLink } from '@angular/router';
+import { combineLatest, map, Observable } from 'rxjs';
+import { Cart } from '../../../../core/@types/Cart';
+import { User } from '../../../../core/@types/User';
+import { AsyncPipe, CurrencyPipe, NgOptimizedImage } from '@angular/common';
+import { ToRelativePathPipe } from '../../../../shared/pipes/to-relative-path.pipe';
+import { ButtonComponent } from '../../../../shared/components/button/button.component';
+import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
+import { StripeCardComponent, StripeService } from 'ngx-stripe';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+   StripeCardElementOptions,
+   StripeElementsOptions,
+} from '@stripe/stripe-js';
+import { CreateOrderRequest } from '../../../../core/@types/CreateOrderRequest';
+import { PaymentType } from '../../../../core/enum/PaymentType';
 
 @Component({
    selector: 'app-checkout',
@@ -54,7 +57,7 @@ export class CheckoutFeature implements OnInit {
 
    paymentForm = this.fb.group({
       method: ['CREDIT_CARD', Validators.required],
-      cardHolderName: ['', Validators.required]
+      cardHolderName: ['', Validators.required],
    });
 
    cardOptions: StripeCardElementOptions = {
@@ -66,15 +69,15 @@ export class CheckoutFeature implements OnInit {
             fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
             fontSize: '16px',
             '::placeholder': {
-               color: '#CFD7E0'
-            }
-         }
-      }
+               color: '#CFD7E0',
+            },
+         },
+      },
    };
 
    elementsOptions: StripeElementsOptions = {
-      locale: 'pt-BR'
-   }
+      locale: 'pt-BR',
+   };
 
    ngOnInit() {
       this.state$ = combineLatest([
@@ -124,10 +127,12 @@ export class CheckoutFeature implements OnInit {
 
                   this.sendOrderToBackend({
                      paymentType: PaymentType.CREDIT_CARD,
-                     cardToken: result.token.id
+                     cardToken: result.token.id,
                   });
                } else if (result.error) {
-                  this.toastService.showError(result.error.message || 'Erro no cartão');
+                  this.toastService.showError(
+                     result.error.message || 'Erro no cartão',
+                  );
                   this.isProcessingOrder = false;
                }
             },
@@ -135,14 +140,16 @@ export class CheckoutFeature implements OnInit {
                console.error(err);
                this.toastService.showError('Erro ao conectar com o Stripe');
                this.isProcessingOrder = false;
-            }
+            },
          });
    }
 
    private sendOrderToBackend(request: CreateOrderRequest) {
       this.orderService.createOrder(request).subscribe({
          next: (orderResponse) => {
-            this.toastService.showSuccess(`Pedido #${orderResponse.orderId} realizado!`);
+            this.toastService.showSuccess(
+               `Pedido #${orderResponse.orderId} realizado!`,
+            );
             this.cartService.refreshCart();
             this.router.navigate(['/orders/history']);
          },
@@ -150,7 +157,7 @@ export class CheckoutFeature implements OnInit {
             console.error(err);
             this.toastService.showError('Erro ao processar o pedido.');
             this.isProcessingOrder = false;
-         }
+         },
       });
    }
 }

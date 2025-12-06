@@ -99,7 +99,7 @@ export class SearchFeature implements OnInit {
                   undefined,
                   localState.page,
                   localState.size,
-                  true
+                  true,
                )
                .pipe(
                   map((response) => ({

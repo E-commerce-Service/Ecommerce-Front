@@ -95,7 +95,7 @@ export class CategoriesFeature implements OnInit {
                            undefined,
                            filters.page,
                            filters.size,
-                           true
+                           true,
                         )
                         .pipe(
                            map((prodResponse) => ({

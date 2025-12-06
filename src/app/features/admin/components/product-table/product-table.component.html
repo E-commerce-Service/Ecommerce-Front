@@ -5,26 +5,26 @@
       <thead
          class="text-xs text-gray-500 uppercase bg-gray-50/80 border-b border-gray-100"
       >
-      <tr>
-         <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
-            Produto
-         </th>
-         <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
-            Categoria
-         </th>
-         <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
-            Preço
-         </th>
-         <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
-            Status / Estoque
-         </th>
-         <th
-            scope="col"
-            class="px-6 py-4 text-right font-semibold tracking-wider"
-         >
-            Ações
-         </th>
-      </tr>
+         <tr>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               Produto
+            </th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               Categoria
+            </th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               Preço
+            </th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               Status / Estoque
+            </th>
+            <th
+               scope="col"
+               class="px-6 py-4 text-right font-semibold tracking-wider"
+            >
+               Ações
+            </th>
+         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
          @for (product of products; track product.id) {
@@ -32,7 +32,8 @@
                class="transition-colors duration-200 group"
                [ngClass]="{
                   'bg-white hover:bg-blue-50/30': product.isAvailable,
-                  'bg-slate-100 opacity-75 hover:bg-slate-200': !product.isAvailable
+                  'bg-slate-100 opacity-75 hover:bg-slate-200':
+                     !product.isAvailable,
                }"
             >
                <td class="px-6 py-4">
@@ -176,7 +177,7 @@
          class="shadow-sm rounded-xl p-4 border flex flex-col gap-4 transition-colors"
          [ngClass]="{
             'bg-white border-gray-200': product.isAvailable,
-            'bg-gray-100 border-gray-300 opacity-80': !product.isAvailable
+            'bg-gray-100 border-gray-300 opacity-80': !product.isAvailable,
          }"
       >
          <div class="flex gap-4">
@@ -227,14 +228,12 @@
 
          <div class="grid grid-cols-2 gap-2 bg-white/50 p-3 rounded-lg text-sm">
             <div>
-               <span class="text-gray-500 text-xs uppercase block"
-               >Status</span
-               >
+               <span class="text-gray-500 text-xs uppercase block">Status</span>
                @if (!product.isAvailable) {
                   <span class="font-medium text-gray-500">Excluído</span>
                } @else if (product.stock > 0) {
                   <span class="font-medium text-green-700"
-                  >{{ product.stock }} un</span
+                     >{{ product.stock }} un</span
                   >
                } @else {
                   <span class="font-medium text-red-600">Esgotado</span>
