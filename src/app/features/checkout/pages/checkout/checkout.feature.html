@@ -103,7 +103,7 @@
                   @if(paymentForm.get('method')?.value === 'CREDIT_CARD'){
                      <div class="space-y-4 animate-fade-in">
                         <div>
-                           <label class="block text-sm font-medium text-gray-700 mb-1">Nome no Cartão</label>
+                           <span class="block text-sm font-medium text-gray-700 mb-1">Nome no Cartão</span>
                            <input
                               type="text"
                               formControlName="cardHolderName"
@@ -113,7 +113,7 @@
                         </div>
 
                         <div>
-                           <label class="block text-sm font-medium text-gray-700 mb-1">Dados do Cartão</label>
+                           <span class="block text-sm font-medium text-gray-700 mb-1">Dados do Cartão</span>
                            <div class="p-3 border border-gray-300 rounded-lg bg-white">
                               <ngx-stripe-card
                                  [options]="cardOptions"

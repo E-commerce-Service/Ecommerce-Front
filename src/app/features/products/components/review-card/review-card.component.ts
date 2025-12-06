@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ReplyFormComponent } from '../../../../shared/components/reply-form/reply-form.component';
 import { CommentReactionPayload } from '../../../../core/@types/EventsPayload/CommentReactionPayload';
+import {ToastService} from '../../../../core/services/toast.service';
 
 @Component({
    selector: 'app-review-card',
@@ -54,6 +55,7 @@ export class ReviewCardComponent {
    }>();
    @Output() delete = new EventEmitter<string>();
 
+   private toastService = inject(ToastService);
    private authService = inject(AuthService);
    private elementRef = inject(ElementRef);
 
@@ -191,5 +193,9 @@ export class ReviewCardComponent {
       this.isReplying = false;
       this.replyingToCommentId = null;
       this.mentioningUserName = null;
+   }
+
+   protected onEditComment() {
+      this.toastService.showInfo('Upcoming feature: Edit Comment');
    }
 }

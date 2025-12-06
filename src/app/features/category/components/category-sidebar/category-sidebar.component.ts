@@ -3,9 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { CategoryService } from '../../../../core/services/category.service';
 import { catchError, map, Observable, of, startWith } from 'rxjs';
-import { Pagination } from '../../../../core/@types/Pagination';
-import { Product } from '../../../../core/@types/Product';
-import { ProductService } from '../../../../core/services/product.service';
+
 
 interface CategoryCardData {
    image: string;
@@ -22,19 +20,6 @@ interface CategoryCardData {
 })
 export class CategorySidebarComponent implements OnInit {
    private categoryService = inject(CategoryService);
-   private productService = inject(ProductService);
-
-   private readonly initialProductState: Pagination<Product> = {
-      data: [],
-      pagination: { page: 0, size: 0, totalElements: 0, totalPages: 0 },
-   };
-
-   productsState$!: Observable<{
-      loading: boolean;
-      products: Pagination<Product>;
-      error: boolean;
-      errorMessage: string;
-   }>;
 
    categoriesState$!: Observable<{
       loading: boolean;

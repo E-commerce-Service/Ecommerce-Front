@@ -56,7 +56,7 @@ export class CategoriesFeature implements OnInit {
 
    private initialFilterState: FilterState = {
       page: 0,
-      size: 10,
+      size: 12,
       name: '',
       sortBy: undefined,
       sortDirection: SortDirection.ASC,

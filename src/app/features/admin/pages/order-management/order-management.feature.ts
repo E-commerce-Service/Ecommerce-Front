@@ -112,11 +112,13 @@ export class OrderManagementFeature implements OnInit {
    onApprove(orderId: number) {
       this.orderToApproveId = orderId;
       this.isApprovedModalOpen = true;
+      this.selectedOrder = null;
    }
 
    onReject(orderId: number) {
       this.orderToRejectId = orderId;
       this.isRejectModalOpen = true;
+      this.selectedOrder = null;
    }
 
    confirmRejection() {

@@ -19,7 +19,7 @@ export class OrderDetailsModalComponent {
 
    calculateTotal(): number {
       return this.order.items.reduce(
-         (acc, item) => acc + item.price * item.quantity,
+         (acc, item) => acc + item.price,
          0,
       );
    }

@@ -386,4 +386,8 @@ export class ReviewsComponent implements OnInit, OnDestroy {
       startPage = Math.min(startPage, totalPages - windowSize);
       return Array.from({ length: windowSize }, (_, i) => startPage + i);
    }
+
+   protected handleReviewEdit() {
+      this.toastService.showInfo("Upcoming feature: Edit review.");
+   }
 }

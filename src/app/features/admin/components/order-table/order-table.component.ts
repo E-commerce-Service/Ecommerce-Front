@@ -20,7 +20,7 @@ export class OrderTableComponent {
 
    calculateTotal(order: OrderShoppingResponse): number {
       return order.items.reduce(
-         (acc, item) => acc + item.price * item.quantity,
+         (acc, item) => acc + item.price,
          0,
       );
    }

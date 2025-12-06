@@ -207,6 +207,7 @@
                   (dislike)="onCommentDislike($event)"
                   (reply)="onCommentReply($event)"
                   (delete)="onCommentDelete($event)"
+                  (edit)="onEditComment()"
                ></app-comment-card>
 
                @if (replyingToCommentId === comment.commentId) {
